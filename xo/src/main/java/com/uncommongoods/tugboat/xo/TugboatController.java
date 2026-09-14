@@ -30,6 +30,9 @@ public class TugboatController {
     @Inject
     private TugboatService tugboatService;
 
+    @Inject
+    private RequestAuthenticator requestAuthenticator;
+
     @Get("/pickup-facility/{pickupFacilityCode}")
     @Produces(MediaType.APPLICATION_JSON)
     public HttpResponse<String> getManifestGroup(@PathVariable String pickupFacilityCode) throws TugboatException {
@@ -50,7 +53,11 @@ public class TugboatController {
     @Post("/tracker/{trackingCode}/{carrier}")
     @Produces(MediaType.APPLICATION_JSON)
     public HttpResponse<String> createTracker(@PathVariable String trackingCode,
-                                              @PathVariable String carrier) {
+                                              @PathVariable String carrier,
+                                              @Header("Authorization") @Nullable String authorization) {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "tracker", trackingCode);
+        if (authResult != null) return authResult;
+
         try {
             String trackerId = tugboatService.createTracker(trackingCode, carrier);
             return HttpResponse.ok(trackerId);
@@ -64,14 +71,22 @@ public class TugboatController {
 
     @Get("/{shipmentId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public HttpResponse<String> retrieve(@PathVariable String shipmentId) throws TugboatException {
+    public HttpResponse<String> retrieve(@PathVariable String shipmentId,
+                                         @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "retrieve", shipmentId);
+        if (authResult != null) return authResult;
+
         return HttpResponse.ok(tugboatService.getTugboat(shipmentId).toString());
     }
 
     @Post("/{shipmentId}/initialize")
     @Produces(MediaType.APPLICATION_JSON)
     public HttpResponse<String> initialize(@PathVariable String shipmentId,
-                                           @QueryValue @Nullable Boolean async) throws TugboatException {
+                                           @QueryValue @Nullable Boolean async,
+                                           @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "initialize", shipmentId);
+        if (authResult != null) return authResult;
+
         if (async != null && async) {
             return enqueueMessage(shipmentId, "initialize");
         }
@@ -82,7 +97,11 @@ public class TugboatController {
     @Post("/{shipmentId}/rate")
     @Produces(MediaType.APPLICATION_JSON)
     public HttpResponse<String> rate(@PathVariable String shipmentId,
-                                     @QueryValue @Nullable Boolean async) throws TugboatException {
+                                     @QueryValue @Nullable Boolean async,
+                                     @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "rate", shipmentId);
+        if (authResult != null) return authResult;
+
         if (async != null && async) {
             return enqueueMessage(shipmentId, "rate");
         }
@@ -93,7 +112,11 @@ public class TugboatController {
     @Post("/{shipmentId}/re-rate")
     @Produces(MediaType.APPLICATION_JSON)
     public HttpResponse<String> rerate(@PathVariable String shipmentId,
-                                       @QueryValue @Nullable Boolean async) throws TugboatException {
+                                       @QueryValue @Nullable Boolean async,
+                                       @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "re-rate", shipmentId);
+        if (authResult != null) return authResult;
+
         if (async != null && async) {
             return enqueueMessage(shipmentId, "re-rate");
         }
@@ -105,7 +128,11 @@ public class TugboatController {
     @Post("/{shipmentId}/shop")
     @Produces(MediaType.APPLICATION_JSON)
     public HttpResponse<String> shop(@PathVariable String shipmentId,
-                                     @QueryValue @Nullable Boolean async) throws TugboatException {
+                                     @QueryValue @Nullable Boolean async,
+                                     @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "shop", shipmentId);
+        if (authResult != null) return authResult;
+
         if (async != null && async) {
             return enqueueMessage(shipmentId, "shop");
         }
@@ -116,7 +143,11 @@ public class TugboatController {
     @Post("/{shipmentId}/purchase")
     @Produces(MediaType.APPLICATION_JSON)
     public HttpResponse<String> purchase(@PathVariable String shipmentId,
-                                         @QueryValue @Nullable Boolean async) throws TugboatException {
+                                         @QueryValue @Nullable Boolean async,
+                                         @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "purchase", shipmentId);
+        if (authResult != null) return authResult;
+
         if (async != null && async) {
             return enqueueMessage(shipmentId, "purchase");
         }
@@ -126,8 +157,12 @@ public class TugboatController {
 
     @Post("/batch/purchase")
     @Produces(MediaType.APPLICATION_JSON)
-    public HttpResponse<String> batchPurchase(@Body List<String> shipmentIds) {
+    public HttpResponse<String> batchPurchase(@Body List<String> shipmentIds,
+                                              @Header("Authorization") @Nullable String authorization) {
         try {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "batch-purchase", null);
+        if (authResult != null) return authResult;
+
             for (String shipmentId : shipmentIds) {
                 tugboatMsgProducer.sendMessage(shipmentId, "purchase");
             }
@@ -144,20 +179,32 @@ public class TugboatController {
 
     @Get("/{shipmentId}/print")
     @Produces(MediaType.APPLICATION_JSON)
-    public HttpResponse<String> print(@PathVariable String shipmentId) throws TugboatException {
+    public HttpResponse<String> print(@PathVariable String shipmentId,
+                                      @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "print", shipmentId);
+        if (authResult != null) return authResult;
+
         return HttpResponse.ok(tugboatService.printTugboat(shipmentId));
     }
 
     @Get("/{shipmentId}/re-print")
     @Produces(MediaType.APPLICATION_JSON)
-    public HttpResponse<String> reprint(@PathVariable String shipmentId) throws TugboatException {
+    public HttpResponse<String> reprint(@PathVariable String shipmentId,
+                                        @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "re-print", shipmentId);
+        if (authResult != null) return authResult;
+
         return HttpResponse.ok(tugboatService.reprintTugboat(shipmentId));
     }
 
     @Post("/{shipmentId}/void")
     @Produces(MediaType.APPLICATION_JSON)
     public HttpResponse<String> voidLabel(@PathVariable String shipmentId,
-                                          @QueryValue @Nullable Boolean async) throws TugboatException {
+                                          @QueryValue @Nullable Boolean async,
+                                          @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "void", shipmentId);
+        if (authResult != null) return authResult;
+
         if (async != null && async) {
             return enqueueMessage(shipmentId, "void");
         }

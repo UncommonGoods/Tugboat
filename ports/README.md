@@ -97,10 +97,23 @@ public interface CacheClientFactory {
 The `configKeys()` array dictates required configuration. The Bridge dynamically renders UI input fields based on these keys, 
 while XO automatically resolves them as environment variables (via the normalization rules above).
 
+Not every SPI needs a factory. A host uses at most one of each and never asks anyone to choose it, so `ServiceLoader`
+instantiates these directly:
+
+```java
+public interface TokenValidator {
+    boolean isValid(String credential);  // authorize an inbound request
+}
+```
+
 **Discovery Behavior:**
 - **Shipping Clients:** Can co-exist. Users select the active client by `type()`.
 - **Cache Clients:** Singleton. Hosts initialize the first discovered factory unless the `CACHE_TYPE` property explicitly 
 - specifies a provider.
+- **Token Validators:** Singleton, optional. With none registered, a host serves every request unauthenticated — which is
+  what lets a build with no auth service run at all, and which hosts are expected to announce loudly at startup.
+  Validation fails closed: an implementation returns `false` for a credential it knows to be bad, and *throws* when it
+  cannot tell, so an outage in whatever vouches for the credential refuses requests instead of waving them through.
 
 To register a factory, provide its fully-qualified class name in a file at `src/main/resources/META-INF/services/<interface FQCN>`. 
 See [`adapters/README.md`](../adapters/README.md) for examples.
