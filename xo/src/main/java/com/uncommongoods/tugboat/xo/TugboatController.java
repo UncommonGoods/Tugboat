@@ -155,6 +155,30 @@ public class TugboatController {
         return HttpResponse.ok(tugboatService.purchaseTugboat(shipmentId));
     }
 
+    @Post("/{shipmentId}/purchase/{boxId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HttpResponse<String> purchase(@PathVariable("shipmentId") String shipmentId,
+                                         @PathVariable("boxId") Integer boxId,
+                                         @QueryValue @Nullable Boolean async,
+                                         @Header("Authorization") @Nullable String authorization) throws TugboatException {
+        HttpResponse<String> authResult = requestAuthenticator.authorize(authorization, "purchase", shipmentId);
+        if (authResult != null) return authResult;
+
+        try {
+            tugboatService.validateBoxSize(shipmentId, boxId);
+        } catch (TugboatException e) {
+            String errMsg = "failed to validate/change box size for shipment " + shipmentId;
+            logger.error(errMsg, e);
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errMsg);
+        }
+
+        if (async != null && async) {
+            return enqueueMessage(shipmentId, "purchase");
+        }
+
+        return HttpResponse.ok(tugboatService.purchaseTugboat(shipmentId));
+    }
+
     @Post("/batch/purchase")
     @Produces(MediaType.APPLICATION_JSON)
     public HttpResponse<String> batchPurchase(@Body List<String> shipmentIds,

@@ -10,13 +10,17 @@ import com.easypost.service.EasyPostClient;
 import com.google.gson.JsonArray;
 import io.micronaut.context.annotation.Value;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 import com.uncommongoods.tugboat.engine.Tugboat;
 import com.uncommongoods.tugboat.engine.TugboatOptions;
 import com.uncommongoods.tugboat.engine.ports.cache.CacheClientFactory;
 import com.uncommongoods.tugboat.engine.ports.cache.ICacheClient;
 import com.uncommongoods.tugboat.engine.ports.config.TugboatSettings;
+import com.uncommongoods.tugboat.engine.ports.shipping.model.BoxSpec;
+import com.uncommongoods.tugboat.engine.ports.shipping.model.IParcel;
 import com.uncommongoods.tugboat.engine.ports.shipping.model.IPostageLabel;
+import com.uncommongoods.tugboat.engine.ports.shipping.service.BoxCatalog;
 import com.uncommongoods.tugboat.engine.ports.shipping.service.IShippingClient;
 import com.uncommongoods.tugboat.engine.ports.shipping.service.ShippingClientAdapter;
 import com.uncommongoods.tugboat.engine.ports.shipping.service.ShippingClientFactory;
@@ -25,10 +29,14 @@ import com.uncommongoods.tugboat.engine.exception.TugboatException;
 import com.uncommongoods.tugboat.engine.hooks.TugboatHookProvider;
 import com.uncommongoods.tugboat.engine.hooks.impl.TugboatHooks;
 import com.uncommongoods.tugboat.engine.manifest.PickupFacility;
+import com.uncommongoods.tugboat.engine.model.TugboatParcel;
+import com.uncommongoods.tugboat.engine.state.ShipmentComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.uncommongoods.tugboat.engine.state.State.*;
 
@@ -74,11 +82,51 @@ public class TugboatService {
 
     private EngineConfig engineConfig;
 
+    /** Optional; null when no {@link BoxCatalog} is on the classpath. */
+    private BoxCatalog boxCatalog;
+
     @PostConstruct
     private void initializeService() {
         publishVendorSettings();
         this.hooks = new TugboatHooks();
         this.engineConfig = createEngineConfig();
+        this.boxCatalog = loadBoxCatalog();
+    }
+
+    @PreDestroy
+    private void shutdownService() {
+        // The hook provider owns a connection pool; release it on shutdown.
+        if (hooks != null) {
+            try {
+                hooks.close();
+            } catch (Exception e) {
+                logger.warn("Failed to close hook provider: {}", e.getMessage());
+            }
+        }
+        // A box catalog may hold one too; one that holds nothing needs no teardown.
+        if (boxCatalog instanceof AutoCloseable closeable) {
+            try {
+                closeable.close();
+            } catch (Exception e) {
+                logger.warn("Failed to close box catalog: {}", e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Discover the {@link BoxCatalog} that resolves a packer's box id to
+     * dimensions, or {@code null} when none is registered — box ids come from
+     * deployment-specific systems, so the catalog is an optional provider like
+     * the shipping and cache clients. Without one, {@link #validateBoxSize} is
+     * a no-op and a box purchase behaves exactly like a plain purchase.
+     */
+    private BoxCatalog loadBoxCatalog() {
+        for (BoxCatalog candidate : ServiceLoader.load(BoxCatalog.class)) {
+            logger.info("Using box catalog {}", candidate.getClass().getName());
+            return candidate;
+        }
+        logger.info("No box catalog registered; box size validation is disabled");
+        return null;
     }
 
     /**
@@ -141,6 +189,73 @@ public class TugboatService {
     public String  purchaseTugboat(String shipmentId) throws TugboatException {
         Tugboat tugboat = getTugboat(shipmentId);
         return tugboat.purchase().toString();
+    }
+
+    /**
+     * Reconcile a shipment's parcel with the box the packer actually used,
+     * before postage is bought.
+     *
+     * <p>Only a single-parcel domestic non-letter shipment is eligible, and only
+     * when the registered {@link BoxCatalog} knows the box id and its dimensions
+     * differ from the parcel's by more than half a unit on any side. When they
+     * do, an already-purchased label is voided, the shipment is rewound to
+     * INITIAL if it had progressed no further than SHOPPED, and it is
+     * re-initialized against the box's dimensions with everything but the parcel
+     * preserved.
+     *
+     * <p>With no catalog registered, or an id it does not recognize, this
+     * returns without touching the shipment.
+     */
+    public void validateBoxSize(String shipmentId, int boxId) throws TugboatException {
+        if (boxCatalog == null) {
+            logger.info("shipment {}: no box catalog; skipping box size validation", shipmentId);
+            return;
+        }
+
+        Tugboat tugboat = getTugboat(shipmentId);
+        if (INITIAL.equals(tugboat.getPackageState().getState())) {
+            tugboat.initialize();
+        }
+        boolean isBoxChangeEligible = tugboat.getParcels().size() == 1 && tugboat.getMetadata() != null &&
+            !(tugboat.getMetadata().has("isInternational") &&
+                tugboat.getMetadata().get("isInternational").getAsBoolean()) &&
+            !(tugboat.getMetadata().has("isLetter") &&
+                tugboat.getMetadata().get("isLetter").getAsBoolean());
+        if (!isBoxChangeEligible) {
+            return;
+        }
+
+        Optional<BoxSpec> found = boxCatalog.find(boxId);
+        if (found.isEmpty()) {
+            logger.info("shipment {}: box {} is not a known swappable box; leaving the parcel as is",
+                shipmentId, boxId);
+            return;
+        }
+        BoxSpec box = found.get();
+
+        List<Float> dims = Stream.of(box.length(), box.width(), box.height())
+            .sorted()
+            .toList();
+        IParcel parcel = tugboat.getParcels().getFirst();
+        List<Float> parcelDims = Stream.of(parcel.getLength(), parcel.getWidth(), parcel.getHeight())
+            .sorted()
+            .toList();
+        boolean dimsMatch = IntStream.range(0, dims.size())
+            .allMatch(i -> Math.abs(dims.get(i) - parcelDims.get(i)) <= 0.5);
+        if (dimsMatch) {
+            return;
+        }
+
+        logger.info("shipment {}: changing box size to {}", shipmentId, box.name());
+        if (tugboat.getPackageState().getState().equals(PURCHASED)) {
+            tugboat.voidLabel();
+        }
+        if (tugboat.getPackageState().getState().ordinal() <= SHOPPED.ordinal()) {
+            tugboat.reset();
+        }
+        IParcel newParcel = new TugboatParcel(parcel.getWeight(), box.length(), box.width(), box.height());
+        tugboat.setParcels(new ArrayList<>(List.of(newParcel)));
+        tugboat.initialize(List.of(ShipmentComponent.PARCELS));
     }
 
     public String printTugboat(String shipmentId) throws TugboatException {

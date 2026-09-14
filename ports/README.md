@@ -101,6 +101,10 @@ Not every SPI needs a factory. A host uses at most one of each and never asks an
 instantiates these directly:
 
 ```java
+public interface BoxCatalog {
+    Optional<BoxSpec> find(int boxId);   // resolve a packer's box id to dimensions
+}
+
 public interface TokenValidator {
     boolean isValid(String credential);  // authorize an inbound request
 }
@@ -110,6 +114,7 @@ public interface TokenValidator {
 - **Shipping Clients:** Can co-exist. Users select the active client by `type()`.
 - **Cache Clients:** Singleton. Hosts initialize the first discovered factory unless the `CACHE_TYPE` property explicitly 
 - specifies a provider.
+- **Box Catalogs:** Singleton, optional. With none registered, a box purchase behaves as a plain purchase.
 - **Token Validators:** Singleton, optional. With none registered, a host serves every request unauthenticated — which is
   what lets a build with no auth service run at all, and which hosts are expected to announce loudly at startup.
   Validation fails closed: an implementation returns `false` for a credential it knows to be bad, and *throws* when it
