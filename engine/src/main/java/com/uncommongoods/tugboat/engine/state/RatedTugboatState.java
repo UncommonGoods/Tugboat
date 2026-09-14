@@ -15,7 +15,6 @@ import com.uncommongoods.tugboat.engine.manifest.PickupGroup;
 
 import java.time.*;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -47,7 +46,7 @@ public class RatedTugboatState extends TugboatStateBase {
         return new ShoppedTugboatState(getTugboat());
     }
 
-    private void eliminateNonManifestRates(Tugboat tugboat) {
+    private void eliminateNonManifestRates(Tugboat tugboat) throws TugboatException {
         Set<CarrierService> rateServices = tugboat.getRates().stream()
             .map(rate  -> new CarrierService(rate.getCarrier(), rate.getService()))
             .collect(Collectors.toSet());
@@ -65,19 +64,8 @@ public class RatedTugboatState extends TugboatStateBase {
                 return rateServices.contains(carrierService);
             })
             .filter(rate -> rate.getRate() > 0.01f)
-            .map(cloneRate())
             .collect(Collectors.toList());
-        tugboat.setRates(availableRates);
-    }
-
-    private Function<IRate, IRate> cloneRate() {
-        return rate -> {
-            try {
-                return rate.clone();
-            } catch (CloneNotSupportedException e) {
-                return rate;
-            }
-        };
+        tugboat.setRates(Utils.copyRates(availableRates));
     }
 
 

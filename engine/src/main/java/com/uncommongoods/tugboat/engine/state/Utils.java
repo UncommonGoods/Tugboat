@@ -10,6 +10,8 @@ import com.uncommongoods.tugboat.engine.ports.shipping.model.IShipment;
 import com.uncommongoods.tugboat.engine.ports.shipping.service.IShippingClient;
 import com.uncommongoods.tugboat.engine.exception.TugboatException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,23 @@ public class Utils {
         if (tugboat.getPickupFacility() != null) {
             tugboat.getPickupFacility().removeTugboatFromGroup(tugboat);
         }
+    }
+
+    /**
+     * Copy rates so edits made after rating (rated-hook price/service/date adjustments) stay
+     * visible as a diff against the untouched shipment/order rate responses instead of writing
+     * through into them.
+     */
+    public static List<IRate> copyRates(List<IRate> rates) throws TugboatException {
+        List<IRate> copies = new ArrayList<>(rates.size());
+        for (IRate rate : rates) {
+            try {
+                copies.add(rate.clone());
+            } catch (CloneNotSupportedException e) {
+                throw new TugboatException("could not copy rate " + rate.getId(), e);
+            }
+        }
+        return Collections.unmodifiableList(copies);
     }
 
     public static IShippingClient getShippingClient(Tugboat tugboat) {

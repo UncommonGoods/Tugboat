@@ -233,7 +233,7 @@ public class InitializedTugboatState extends TugboatStateBase {
         return Math.max(0, (int) (manifestDate.toEpochDay() - today.toEpochDay()));
     }
 
-    private void setRates(Tugboat tugboat) {
+    private void setRates(Tugboat tugboat) throws TugboatException {
         List<IRate> rates;
         if (tugboat.getOrderRateResponses() != null && !tugboat.getOrderRateResponses().isEmpty()) {
             rates = tugboat.getOrderRateResponses().stream()
@@ -246,7 +246,7 @@ public class InitializedTugboatState extends TugboatStateBase {
         } else {
             return;
         }
-        tugboat.setRates(rates);
+        tugboat.setRates(Utils.copyRates(rates));
     }
 
     private void setGlobalCarrierServices(Tugboat tugboat) throws TugboatException {
