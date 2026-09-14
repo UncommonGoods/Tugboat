@@ -580,7 +580,19 @@ public class ConfigurationManager {
         tugboatOptions.setSelectLowestRate(false);
 
         try {
-            TugboatHookProvider hookProvider = new TugboatHooks();
+            // The hook provider reads its config (DB_URL, DB_USER, ...) from
+            // TugboatSettings in its constructor, but only the *active*
+            // environment's rows are published. Publish this environment's
+            // rows for the construction, then restore the active map — the
+            // same per-environment trap buildCacheClient sidesteps by reading
+            // the settings map directly.
+            TugboatSettings.publish(readSettingsForEnvironment(environment));
+            TugboatHookProvider hookProvider;
+            try {
+                hookProvider = new TugboatHooks();
+            } finally {
+                publishActiveEnvironmentSettings();
+            }
             hookProvider.applyTo(tugboatOptions);
             if ("prod".equalsIgnoreCase(environment)) {
                 prodHookProvider = hookProvider;
