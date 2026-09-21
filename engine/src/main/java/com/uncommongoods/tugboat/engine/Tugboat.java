@@ -36,6 +36,8 @@ public class Tugboat extends TugboatBase implements ITugboatState {
     @Expose
     private Instant lock;
     private TugboatBuilder builder;
+    // true when user-provided components kept by copyFieldsFrom differ from the cached tugboat
+    private boolean preservedInputChanged;
 
     protected Tugboat(TugboatBuilder builder) {
         super(builder.cargoId, builder.expectedDeliveryDate, builder.pickupFacility,
@@ -238,8 +240,22 @@ public class Tugboat extends TugboatBase implements ITugboatState {
                 throw new TugboatException("Failed to deserialize cached Tugboat data for cargoId: " + this.cargoId, e);
             }
             this.isPackageInitialized = true;
+            resetIfRatedWithStaleInput();
         }
         return this;
+    }
+
+    /**
+     * rates (and the single-shipment vs. multi-box order responses) were built from the cached parcels/addresses.
+     * if the user changed them after rating but before purchase, start over so they are re-rated.
+     * purchased tugboats are voided by the caller, which resets them on the next progression.
+     */
+    private void resetIfRatedWithStaleInput() throws TugboatException {
+        State state = this.packageState.getState();
+        if (this.preservedInputChanged && (state.equals(RATED) || state.equals(SHOPPED))) {
+            this.reset();
+        }
+        this.preservedInputChanged = false;
     }
 
     public Tugboat retrieve() throws TugboatException {
@@ -394,18 +410,28 @@ public class Tugboat extends TugboatBase implements ITugboatState {
         if (this.pickupFacility != null) {
             this.pickupFacility.setEngineConfig(this.engineConfig);
         }
+        boolean inputChanged = false;
         if (this.originAddress == null || !shipmentComponentsToPreserve.contains(ORIGIN_ADDRESS)) {
             this.originAddress = other.originAddress;
+        } else {
+            inputChanged |= mappablesDiffer(this.originAddress, other.originAddress);
         }
         if (this.destinationAddress == null || !shipmentComponentsToPreserve.contains(DESTINATION_ADDRESS)) {
             this.destinationAddress = other.destinationAddress;
+        } else {
+            inputChanged |= mappablesDiffer(this.destinationAddress, other.destinationAddress);
         }
         if (this.returnAddress == null || !shipmentComponentsToPreserve.contains(RETURN_ADDRESS)) {
             this.returnAddress = other.returnAddress;
+        } else {
+            inputChanged |= mappablesDiffer(this.returnAddress, other.returnAddress);
         }
         if (this.parcels == null || this.parcels.isEmpty() || !shipmentComponentsToPreserve.contains(PARCELS)) {
             this.parcels = other.parcels;
+        } else {
+            inputChanged |= parcelsDiffer(this.parcels, other.parcels);
         }
+        this.preservedInputChanged = inputChanged;
         this.shipmentRateResponses = other.shipmentRateResponses;
         this.orderRateResponses = other.orderRateResponses;
         this.rates = other.rates;
@@ -423,6 +449,28 @@ public class Tugboat extends TugboatBase implements ITugboatState {
             this.isPackageInitialized = true;
         }
         this.shippingClientKey = other.shippingClientKey;
+    }
+
+    private static boolean mappablesDiffer(Mappable a, Mappable b) {
+        if (a == null || b == null) {
+            return a != b;
+        }
+        return !Objects.equals(a.toMap(), b.toMap());
+    }
+
+    private static boolean parcelsDiffer(List<IParcel> a, List<IParcel> b) {
+        if (a == null || b == null) {
+            return a != b;
+        }
+        if (a.size() != b.size()) {
+            return true;
+        }
+        for (int i = 0; i < a.size(); i++) {
+            if (mappablesDiffer(a.get(i), b.get(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

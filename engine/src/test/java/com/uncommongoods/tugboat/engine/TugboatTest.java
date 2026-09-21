@@ -17,6 +17,7 @@ import com.uncommongoods.tugboat.engine.model.TugboatAddress;
 import com.uncommongoods.tugboat.engine.model.TugboatParcel;
 import com.uncommongoods.tugboat.engine.state.InitialTugboatState;
 import com.uncommongoods.tugboat.engine.state.RatedTugboatState;
+import com.uncommongoods.tugboat.engine.state.ShipmentComponent;
 import com.uncommongoods.tugboat.engine.state.State;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -189,6 +190,56 @@ public class TugboatTest {
         assertSame(tugboat, ratedTugboat); // Should return same instance
         assertInstanceOf(RatedTugboatState.class, ratedTugboat.getPackageState());
         assertEquals(State.RATED, ratedTugboat.getPackageState().getState());
+    }
+
+    @Test
+    void testAddingBoxAfterRatingResetsTugboat() throws TugboatException {
+        String cargoId = "CARGO_005_MULTIBOX";
+
+        cacheRatedSingleBoxTugboat(cargoId);
+
+        Tugboat multiBoxTugboat = Tugboat.builder(engineConfig, cargoId)
+            .parcels(new ArrayList<>(createTestParcels()))
+            .build();
+        multiBoxTugboat.retrieve(List.of(ShipmentComponent.PARCELS));
+
+        // rated with 1 box, now has 2: must start over instead of keeping single-shipment rate responses
+        assertEquals(State.INITIAL, multiBoxTugboat.getPackageState().getState());
+        assertEquals(2, multiBoxTugboat.getParcels().size());
+        assertNull(multiBoxTugboat.getOrderRateResponses());
+        assertNull(multiBoxTugboat.getSelectedRate());
+    }
+
+    @Test
+    void testRetrievingSameParcelsKeepsRatedState() throws TugboatException {
+        String cargoId = "CARGO_005_SAMEBOX";
+
+        cacheRatedSingleBoxTugboat(cargoId);
+
+        Tugboat sameBoxTugboat = Tugboat.builder(engineConfig, cargoId)
+            .parcels(new ArrayList<>(createTestParcels().subList(0, 1)))
+            .build();
+        sameBoxTugboat.retrieve(List.of(ShipmentComponent.PARCELS));
+
+        assertEquals(State.RATED, sameBoxTugboat.getPackageState().getState());
+        assertEquals(1, sameBoxTugboat.getParcels().size());
+    }
+
+    /**
+     * rate a 1-box tugboat and cache it. test shipment/rate DTOs can't be deserialized from the cache,
+     * so they are dropped before caching - only the state and parcels matter here.
+     */
+    private static void cacheRatedSingleBoxTugboat(String cargoId) throws TugboatException {
+        Tugboat tugboat = Tugboat.builder(engineConfig, cargoId)
+            .originAddress(createTestOriginAddress())
+            .destinationAddress(createTestDestinationAddress())
+            .parcels(new ArrayList<>(createTestParcels().subList(0, 1)))
+            .build()
+            .rate();
+        assertEquals(State.RATED, tugboat.getPackageState().getState());
+        tugboat.setShipmentRateResponses(null);
+        tugboat.setRates(null);
+        engineConfig.getCacheClient().setEx(engineConfig.getCachePrefix() + "TBCARGO:" + cargoId, 60, tugboat.toString());
     }
 
     /*@Test

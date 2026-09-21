@@ -127,6 +127,7 @@ public class InitializedTugboatState extends TugboatStateBase {
 
         List<IShipment> shipments = new ArrayList<>();
         List<IOrder> orders = new ArrayList<>();
+        TugboatException lastOrderException = null;
 
         for (Map.Entry<ManifestKey, List<String>> entry : groupedCarrierAccountIds.entrySet()) {
             ManifestKey manifestKey = entry.getKey();
@@ -139,9 +140,15 @@ public class InitializedTugboatState extends TugboatStateBase {
             List<IParcel> parcels = tugboat.getParcels();
             validateParcels(parcels);
             if (tugboat.getParcels().size() > 1) {
-                IOrder order = shippingClient.getOrderService().create(params);
-                if(order != null) {
-                    orders.add(order);
+                // not every client supports orders; rate multi-box through the clients that do
+                try {
+                    IOrder order = shippingClient.getOrderService().create(params);
+                    if (order != null) {
+                        orders.add(order);
+                    }
+                } catch (TugboatException e) {
+                    lastOrderException = e;
+                    System.err.println("Order rating failed for client " + manifestKey.shippingClientKey() + ": " + e.getMessage());
                 }
             } else {
                 IShipment shipment = shippingClient.getShipmentService().create(params);
@@ -152,6 +159,9 @@ public class InitializedTugboatState extends TugboatStateBase {
         }
 
         if (tugboat.getParcels().size() > 1) {
+            if (orders.isEmpty()) {
+                throw new TugboatException("No shipping client could rate a multi-box shipment", lastOrderException);
+            }
             tugboat.setOrderRateResponses(orders);
         } else {
             tugboat.setShipmentRateResponses(shipments);
