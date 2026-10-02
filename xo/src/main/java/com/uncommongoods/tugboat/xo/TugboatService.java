@@ -343,7 +343,8 @@ public class TugboatService {
 
     /**
      * Retrieve a pickup facility, or {@code null} when running without a cache
-     * (facilities are cache-backed, so there is nothing to retrieve).
+     * (facilities are cache-backed, so there is nothing to retrieve) or when the
+     * cache holds no facility under this code (e.g. a fresh local redis).
      */
     public PickupFacility getPickupFacility(String pickupFacilityCode) {
         if (engineConfig.getCacheClient() == null) {
@@ -351,6 +352,10 @@ public class TugboatService {
         }
         PickupFacility pickupFacility = new PickupFacility(engineConfig, pickupFacilityCode);
         pickupFacility.retrieve();
+        if (pickupFacility.getPickupFacilityId() == null) {
+            logger.warn("No pickup facility {} in the cache; continuing without one", pickupFacilityCode);
+            return null;
+        }
         return pickupFacility;
     }
 

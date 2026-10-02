@@ -37,7 +37,7 @@ public class PickupFacility {
     @Expose
     private String pickupFacilityCode;
     @Expose
-    private List<PickupGroup> pickupGroups;
+    private List<PickupGroup> pickupGroups = new ArrayList<>();
     private Gson gson;
 
     private Gson getGson() {
