@@ -24,9 +24,13 @@ val updateRegion = project.findProperty("updateRegion")?.toString() ?: "us-east-
 val updateBaseUrl = "https://$updateBucket.s3.$updateRegion.amazonaws.com/updates"
 val appVersion = project.findProperty("versionOverride")?.toString() ?: project.version.toString()
 
+// JavaFX 26 needs a newer JDK than the rest of the build's 21. The jpackageMsi
+// task below links the installer's runtime from this same toolchain.
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+        vendor = JvmVendorSpec.ADOPTIUM
+    }
 }
 
 application {
@@ -157,13 +161,15 @@ val jpackageMsi = tasks.register<Exec>("jpackageMsi") {
         if (!System.getProperty("os.name").lowercase().contains("win")) {
             throw GradleException("jpackageMsi must run on Windows: MSI packaging requires jpackage's WiX Toolset backend (install WiX 3.x and ensure it is on PATH).")
         }
-        // Resolve the same toolchain the runtime image will be linked from.
-        // The vendor is pinned here as well as in the root build: a launcher
+        // Link the runtime image from the same JDK the Bridge is compiled with
+        // (the java { toolchain } block above). Reading it from there, rather
+        // than repeating a version, keeps the bundled runtime from falling
+        // behind the bytecode it has to run. The vendor matters too: a launcher
         // spec that omits it can select a different JDK than the compile
         // toolchain, and the notice below would then name the wrong source.
         val jdk = javaToolchains.launcherFor {
-            languageVersion.set(JavaLanguageVersion.of(21))
-            vendor.set(JvmVendorSpec.ADOPTIUM)
+            languageVersion.set(java.toolchain.languageVersion)
+            vendor.set(java.toolchain.vendor)
         }.get().metadata
 
         val runtimeVersion = jdk.javaRuntimeVersion

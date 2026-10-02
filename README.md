@@ -159,7 +159,7 @@ Adapters provides a set of concrete Ports implementations.
 
 ## ⚙️ Requirements
 
-- **JDK 21**
+- **JDK 21** (the Bridge builds with **JDK 25** for JavaFX 26; Gradle downloads it automatically if it is not installed)
 - **Docker**: A Docker runtime is needed for `TestContainers` during testing and for `XO` Micronaut optimization.
 - **Cache**: A cache is optional, but it's required at runtime for state to persist between calls (provided via `adapters/redis`).
 
