@@ -61,6 +61,9 @@ dependencies {
 
     implementation(libs.jserialcomm)
 
+    // Rendering PDF labels for print. PDFBox is already on the runtime classpath
+    // via :tugboat-engine, but that module declares it `implementation`, so the
+    // Bridge needs its own entry to compile against PDFPrintable.
     implementation(libs.pdfbox)
 
     implementation(libs.slf4j.simple)
@@ -181,6 +184,8 @@ val jpackageMsi = tasks.register<Exec>("jpackageMsi") {
                 .replace("@JDK_VERSION@", "$version+$buildNum")
                 .replace("@JDK_SOURCE@", jdkSource)
         )
+        // A notice that points nowhere is not a notice. Refuse to build rather
+        // than ship a broken one.
         Regex("""\[[A-Z][A-Z-]+]|@[A-Z_]+@""").find(rendered.readText())?.let {
             throw GradleException(
                 "$rendered still contains the ${it.value} placeholder. " +
@@ -191,6 +196,7 @@ val jpackageMsi = tasks.register<Exec>("jpackageMsi") {
         val jdkHome = jdk.installationPath
         val dest = distDir.get().asFile
         dest.mkdirs()
+        // Remove any prior MSI for this version so the rename below is unambiguous.
         dest.listFiles { f -> f.name.endsWith(".msi") }?.forEach { it.delete() }
 
         executable = jdkHome.file("bin/jpackage.exe").asFile.absolutePath

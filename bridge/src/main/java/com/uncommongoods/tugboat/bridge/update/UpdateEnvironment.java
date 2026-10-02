@@ -66,9 +66,9 @@ public final class UpdateEnvironment {
 
     public static double checkIntervalHours() {
         try {
-            return Double.parseDouble(System.getProperty("tugboat.update.intervalHours", "0.08"));
+            return Double.parseDouble(System.getProperty("tugboat.update.intervalHours", "0.25"));
         } catch (NumberFormatException e) {
-            return 0.08;
+            return 0.25;
         }
     }
 
