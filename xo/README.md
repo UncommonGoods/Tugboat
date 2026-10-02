@@ -48,6 +48,7 @@ Base path is `${tugboat.api.path}`, default `/tugboat`.
 | `POST` | `/{shipmentId}/re-rate` | yes | resets first if the shipment is at `SHOPPED` or earlier, then rates again |
 | `POST` | `/{shipmentId}/shop` | yes | |
 | `POST` | `/{shipmentId}/purchase` | yes | |
+| `POST` | `/{shipmentId}/purchase/{boxId}` | yes | resizes the parcel to the box the packer used, then buys; a plain purchase when no box catalog is registered |
 | `POST` | `/batch/purchase` | always | body: JSON array of shipment ids |
 | `GET` | `/{shipmentId}/print` | — | returns labels |
 | `GET` | `/{shipmentId}/re-print` | — | |
@@ -63,9 +64,22 @@ in one request.
 
 ## Authentication
 
-There is none. XO ships with no authentication of its own — every endpoint is
-open to anyone who can reach the port. Run it on a trusted network, or behind an
-API gateway or reverse proxy that authenticates for you.
+XO has no authentication of its own. Instead, it hands each request's
+`Authorization` header to a `TokenValidator` — a [ports](../ports/README.md) SPI
+discovered via `ServiceLoader`, like the shipping and cache clients — so what
+counts as a valid credential is decided by whichever adapter you put on the
+classpath (see [Auth Adapters](../adapters/README.md#auth-adapters)).
+
+- **No validator registered** (the default build): every request is served.
+  XO logs a prominent `NO TOKEN VALIDATOR REGISTERED` warning at startup. Run it
+  on a trusted network, or behind an API gateway or reverse proxy that
+  authenticates for you.
+- **Validator registered**: an invalid or missing credential gets a `401`. If the
+  validator cannot decide (its auth service is down, say), the request fails
+  with a `500` rather than being let through.
+
+The shipment endpoints, `/batch/purchase`, and `/tracker` are gated.
+`/pickup-facility`, `/pickup-group`, and `/return-label` are not.
 
 ## Configuration
 
@@ -79,7 +93,7 @@ its dependency on AWS Secrets Manager.
 |---|---|---|
 | `SERVER_PORT` | `8080` | HTTP port |
 | `TUGBOAT_QUEUE` | — | SQS queue name for async work |
-| `TUGBOAT_CACHE_PREFIX` | — | namespaces every cache key |
+| `TUGBOAT_CACHE_PREFIX` | — | namespaces every cache key as `<prefix>:<key>` (the `:` is added for you) |
 
 ### Cache
 
@@ -115,6 +129,28 @@ present:
 | `TUGBOAT_ESW_BRAND_CODE` | — | esw adapter; deployment-specific |
 | `TUGBOAT_ESW_GRANT_TYPE` | `client_credentials` | esw adapter |
 | `TUGBOAT_ESW_CLIENT_ID` | — | esw adapter; deployment-specific |
+
+### Box catalog
+
+`POST /{shipmentId}/purchase/{boxId}` reconciles the shipment's parcel with the
+box the packer actually used before buying postage. Box ids come from whatever
+system the warehouse floor scans against, so the lookup sits behind a
+`BoxCatalog` provider discovered via `ServiceLoader` — the same shape as the
+shipping and cache client SPIs.
+
+If no provider is on the classpath, the endpoint logs that validation was
+skipped and behaves exactly like `/{shipmentId}/purchase`. With a provider
+registered, only single-parcel shipments that your hooks have not flagged as
+international or as a letter (`isInternational` / `isLetter` in the shipment
+metadata) are eligible. The parcel is updated if the box's dimensions differ by
+more than 0.5 units on any side; if so, any existing label is voided and the
+shipment is re-initialized with the new dimensions before it is purchased.
+
+A provider reads whatever configuration it needs by name through
+`TugboatSettings`, so in XO that is plain environment variables (see
+[Anything your hooks need](#anything-your-hooks-need)). Providers should defer
+connecting to anything until their first lookup, since `ServiceLoader`
+instantiates them even in deployments that never call this endpoint.
 
 ### SQS
 
@@ -171,13 +207,56 @@ without the gate XO would start, fail to register the listener, log a clean
 startup, and sit there as a dead consumer.
 
 Non-secret config lives in `docker-compose.yml`; API keys go in `.env.dev`, which
-is gitignored.
+is gitignored. Start from the template: `cp .env.example .env.dev`.
 
 ### From Gradle
 
+The fastest loop for iterating on XO itself; Docker is only needed for whatever
+backing services you want.
+
+`.env.example` lists every variable XO reads, but its values are written for the
+Compose network. Copy it to a file of your own (any `.env.*` name is gitignored),
+adjust the values below, and load it into your shell:
+
 ```bash
+cp .env.example .env.local           # then edit, see the table below
+set -a; source .env.local; set +a    # export everything in the file
 ./gradlew :tugboat-xo:run
 ```
+
+The values that change when XO runs on the host rather than in Compose:
+
+| Variable | `.env.example` (Compose) | From Gradle |
+|---|---|---|
+| `AWS_ENDPOINT_URL_SQS` | `http://localstack:4566` | `http://localhost:4566` |
+| `CACHE_URL` | `redis` | `localhost` |
+
+Compose service names (`localstack`, `redis`) only resolve inside the Compose
+network; Compose publishes both services on the same ports on the host. Start
+whichever ones you need first:
+
+```bash
+docker compose up redis              # cache only
+docker compose up localstack redis   # cache + SQS
+```
+
+Things that commonly go wrong:
+
+- **EasyPost.** `TUGBOAT_EASYPOST_API_KEY` is required; XO fails to start without it.
+- **Cache prefix.** Every cache key is `<TUGBOAT_CACHE_PREFIX>:<key>` (leave the
+  colon out of the variable). If you point `CACHE_URL` at a cache another
+  deployment writes to, the prefix must match that deployment's, or XO sees an
+  empty cache: shipments start over from `INITIAL` and pickup facilities are not
+  found. Sharing a cache also means your local XO writes into that deployment's
+  data.
+- **SQS.** `TUGBOAT_QUEUE` must name a queue that already exists when XO starts;
+  `localstack-init/create-queue.sh` creates `tugboat-queue`. If the queue cannot
+  be resolved, the consumer is never registered and queued work is silently
+  dropped. The AWS credentials can be dummy values — LocalStack only needs signed
+  requests. To skip SQS entirely, set `MICRONAUT_JMS_SQS_ENABLED=false`; only the
+  synchronous endpoints will work.
+- **No cache.** Leave `CACHE_URL` unset — see
+  [Running without a cache](#running-without-a-cache).
 
 ### As a jar
 

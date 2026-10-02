@@ -179,6 +179,19 @@ public class MyCacheClient implements ICacheClient, AutoCloseable {
 }
 ```
 
+## Auth Adapters
+
+Auth adapters implement `TokenValidator`, and have no factory: a host uses at most one and does not ask anyone to choose
+it, so `ServiceLoader` instantiates the validator directly.
+
+**Rule:** Fail closed. Return `false` only for a credential you know to be bad — that is a `401`, and the caller is at
+fault. When you cannot tell, because whatever vouches for the credential is unreachable or answered nonsense, *throw* —
+that is a `500`, and the deployment is at fault. Never return `true` to paper over an outage; a wedged auth service must
+not become an open door.
+
+A host that discovers no validator serves every request. That is deliberate — it is what lets a build with no auth
+service in front of it run — and hosts announce it loudly at startup rather than quietly.
+
 ## Packaging
 
 When building a fat jar (e.g., using the Shadow plugin), `META-INF/services` files must be merged (e.g., using `mergeServiceFiles()`). Otherwise, only one adapter's registration will survive the packaging process. The `xo` build handles this automatically.

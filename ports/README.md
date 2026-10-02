@@ -5,14 +5,14 @@ these interfaces, external shipping APIs and caching mechanisms can be easily in
 
 The `engine` and all adapters depend on `ports`.
 
-## Architecture
+## Architecture & Purpose
 
 The engine operates on a standardized shipping vocabulary (shipments, rates, parcels, addresses, labels, trackers) 
 originally modeled after the [EasyPost Java](https://github.com/EasyPost/easypost-java.git) client. Rather than coupling 
 the engine to multiple vendor-specific domain models, vendors are integrated via adapters that translate their models into 
 these standard `ports` interfaces. 
 
-This design means that the `engine` remains agnostic to specific implementations (e.g., EasyPost, ESW, Redis). 
+This decoupling ensures that the `engine` remains entirely agnostic to specific technologies (e.g., EasyPost, ESW, Redis). 
 Introducing a new carrier aggregator or cache client requires only a new adapter module, with zero modifications to the core engine.
 
 ## Components
@@ -49,12 +49,14 @@ The engine uses a strict subset of these services: `getShipmentService().create/
 `getAddressService().create`, and `getCarrierAccountService().all()`. Adapters for APIs lacking certain concepts (e.g., 
 scan forms) may safely throw an `UnsupportedOperationException` for those endpoints.
 
+The `subscribeToRequestHook` and `subscribeToResponseHook` methods facilitate wire-level HTTP hooks (native to the EasyPost 
+client) and operate independently of Tugboat's state machine lifecycle hooks.
 
 ### Cache (`cache/ICacheClient`)
 
 The cache interface is based on Redis's [Jedis](https://github.com/redis/jedis) library.
 
-While the interface is covers the whole Redis API, the core engine currently requires only `get`, `set`, `setEx`, `del`, `hgetAll`, and 
+While the interface is comprehensive, the core engine currently requires only `get`, `set`, `setEx`, `del`, `hgetAll`, and 
 `hset`. Unused operations can throw `UnsupportedOperationException`.
 
 ### Configuration (`config/TugboatSettings`)

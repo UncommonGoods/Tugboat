@@ -65,7 +65,7 @@ public class RequestAuthenticator {
         logger.warn("* Every request to this service will be served UNAUTHENTICATED.  *");
         logger.warn("* This is expected for a build with no auth service in front of  *");
         logger.warn("* it. If that is not this deployment, put a TokenValidator       *");
-        logger.warn("* adapter on the classpath (see adapters/ug-auth) and restart.   *");
+        logger.warn("* adapter on the classpath (see adapters/README.md) and restart. *");
         logger.warn("******************************************************************");
         return null;
     }
