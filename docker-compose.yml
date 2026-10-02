@@ -1,0 +1,39 @@
+services:
+  localstack:
+    image: localstack/localstack:3
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+    volumes:
+      - "./localstack-init:/etc/localstack/init/ready.d"
+    healthcheck:
+      test: ["CMD", "awslocal", "sqs", "get-queue-url", "--queue-name", "tugboat-queue"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  tugboat-xo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        scope: dev
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.dev
+    environment:
+      - CACHE_URL=redis
+      - CACHE_PORT=6379
+    depends_on:
+      localstack:
+        condition: service_healthy
+      redis:
+        condition: service_started

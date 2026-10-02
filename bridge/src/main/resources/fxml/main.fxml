@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2025 Uncommon Goods LLC
+  SPDX-License-Identifier: MPL-2.0
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.uncommongoods.tugboat.bridge.MainController">
+<VBox>
+
+  <HBox fx:id="topBar" styleClass="top-bar" prefHeight="72.0">
+    <Button fx:id="hamburgerButton" mnemonicParsing="false" onAction="#toggleNavigation" styleClass="hamburger-button"
+            text="☰"/>
+
+    <Region HBox.hgrow="ALWAYS"/>
+
+    <StackPane styleClass="logo-container">
+      <VBox alignment="CENTER" spacing="0" prefWidth="48.0" prefHeight="48.0">
+        <StackPane prefWidth="34.0" prefHeight="37.0">
+          <SVGPath
+            content="M19,5 C19.5523,5 20,1.55228 20,1 C20,0.447715 19.5523,0 19,0 C18.4477,0 18,0.447715 18,1 C18,1.55228 18.4477,5 19,5 Z M12.5,16.5 C12.5,15.6716 13.1716,15 14,15 C14.8284,15 15.5,15.6716 15.5,16.5 C15.5,17.3284 14.8284,18 14,18 C13.1716,18 12.5,17.3284 12.5,16.5 Z M18,8 C18,7.44772 18.4477,7 19,7 C19.5523,7 20,7.44772 20,8 L20,11 L21,11 C21.5523,11 22,11.4477 22,12 C22,12.5523 21.5523,13 21,13 L20,13 L20,17.4615 L23,17.4615 C24.1046,17.4615 25,18.357 25,19.4615 L25,23.0268 L32.0021,23.0343 C33.1059,23.0355 34,23.9306 34,25.0343 L34,28 L31.8293,28 C31.4175,26.8348 30.3062,26 29,26 C27.6938,26 26.5825,26.8348 26.1707,28 L23.8293,28 C23.4175,26.8348 22.3062,26 21,26 C19.6938,26 18.5825,26.8348 18.1707,28 L15.8293,28 C15.4175,26.8348 14.3062,26 13,26 C11.6938,26 10.5825,26.8348 10.1707,28 L7.82929,28 C7.41746,26.8348 6.30622,26 5,26 C3.69378,26 2.58254,26.8348 2.17071,28 L0.364624,28 C0.125948,26.5719 0,24.9172 0,23 L8,23.0086 L8,13 L7,13 C6.44772,13 6,12.5523 6,12 C6,11.4477 6.44772,11 7,11 L18,11 L18,8 Z M18,13 L10,13 L10,23 L23,23 L23,19.4615 L18,19.4615 L18,13 Z M15,37 C8.42477,37 2.83766,37 0.812262,30 L2.17071,30 C2.58254,31.1652 3.69378,32 5,32 C6.30622,32 7.41746,31.1652 7.82929,30 L10.1707,30 C10.5825,31.1652 11.6938,32 13,32 C14.3062,32 15.4175,31.1652 15.8293,30 L18.1707,30 C18.5825,31.1652 19.6938,32 21,32 C22.3062,32 23.4175,31.1652 23.8293,30 L26.1707,30 C26.5825,31.1652 27.6938,32 29,32 C30.3062,32 31.4175,31.1652 31.8293,30 L34,30 L34,34.9674 C34,36.0704 33.1069,36.9653 32.0038,36.9674 L15,37 Z M30.6,29 C30.6,29.8837 29.8836,30.6 29,30.6 C28.1163,30.6 27.4,29.8837 27.4,29 C27.4,28.1164 28.1163,27.4 29,27.4 C29.8836,27.4 30.6,28.1164 30.6,29 Z M4.99999,30.6 C5.88365,30.6 6.59999,29.8837 6.59999,29 C6.59999,28.1164 5.88365,27.4 4.99999,27.4 C4.11634,27.4 3.39999,28.1164 3.39999,29 C3.39999,29.8837 4.11634,30.6 4.99999,30.6 Z M14.6,29 C14.6,29.8837 13.8836,30.6 13,30.6 C12.1163,30.6 11.4,29.8837 11.4,29 C11.4,28.1164 12.1163,27.4 13,27.4 C13.8836,27.4 14.6,28.1164 14.6,29 Z M21,30.6 C21.8836,30.6 22.6,29.8837 22.6,29 C22.6,28.1164 21.8836,27.4 21,27.4 C20.1163,27.4 19.4,28.1164 19.4,29 C19.4,29.8837 20.1163,30.6 21,30.6 Z M13.9799,2.56566 C14.2923,2.87808 15.9261,5.14498 15.5355,5.5355 C15.145,5.92603 12.8781,4.29229 12.5657,3.97987 C12.2533,3.66745 12.3166,3.0976 12.7071,2.70708 C13.0976,2.31655 13.6675,2.25324 13.9799,2.56566 Z M22.4142,5.56068 C22.8048,5.9512 25.0717,4.31746 25.3841,4.00505 C25.6965,3.69263 25.6332,3.12278 25.2427,2.73225 C24.8521,2.34173 24.2823,2.27841 23.9699,2.59083 C23.6574,2.90325 22.0237,5.17016 22.4142,5.56068 Z"
+            fill="#000000" styleClass="tugboat-svg"/>
+        </StackPane>
+      </VBox>
+    </StackPane>
+
+    <Region HBox.hgrow="ALWAYS"/>
+
+    <Label fx:id="devIndicatorLabel" text="DEV" styleClass="dev-indicator" visible="false" managed="false">
+      <HBox.margin>
+        <Insets right="16.0"/>
+      </HBox.margin>
+    </Label>
+
+    <padding>
+      <Insets left="16.0" right="16.0"/>
+    </padding>
+  </HBox>
+
+  <StackPane VBox.vgrow="ALWAYS">
+    <VBox fx:id="contentArea" styleClass="content-area">
+    </VBox>
+
+    <VBox fx:id="leftNavigation" styleClass="left-navigation" prefWidth="300.0" alignment="TOP_LEFT"
+          StackPane.alignment="TOP_LEFT">
+      <Label styleClass="nav-title" text="Navigation"/>
+      <Button mnemonicParsing="false" onAction="#showShipping" styleClass="nav-item">
+        <graphic>
+          <FontIcon iconLiteral="mdi2f-ferry" iconSize="20" styleClass="nav-icon"/>
+        </graphic>
+        <text>Shipping</text>
+      </Button>
+      <Button fx:id="setOriginButton" mnemonicParsing="false" onAction="#showSetOrigin" styleClass="nav-item" visible="false" managed="false">
+        <graphic>
+          <FontIcon iconLiteral="mdi2m-map-marker" iconSize="20" styleClass="nav-icon"/>
+        </graphic>
+        <text>Set Origin</text>
+      </Button>
+      <Button mnemonicParsing="false" onAction="#showHistory" styleClass="nav-item">
+        <graphic>
+          <FontIcon iconLiteral="mdi2h-history" iconSize="20" styleClass="nav-icon"/>
+        </graphic>
+        <text>History</text>
+      </Button>
+      <Button fx:id="pickupsButton" mnemonicParsing="false" onAction="#showPickups" styleClass="nav-item" visible="false" managed="false">
+        <graphic>
+          <FontIcon iconLiteral="mdi2t-truck" iconSize="20" styleClass="nav-icon"/>
+        </graphic>
+        <text>Pickups</text>
+      </Button>
+      <Button mnemonicParsing="false" onAction="#showSettings" styleClass="nav-item">
+        <graphic>
+          <FontIcon iconLiteral="mdi2c-cog" iconSize="20" styleClass="nav-icon"/>
+        </graphic>
+        <text>Settings</text>
+      </Button>
+      <Button fx:id="devModeButton" mnemonicParsing="false" onAction="#enterDevMode" styleClass="nav-item" visible="false" managed="false">
+        <graphic>
+          <FontIcon iconLiteral="mdi2d-dev-to" iconSize="20" styleClass="nav-icon"/>
+        </graphic>
+        <text>Dev Mode</text>
+      </Button>
+      <Button fx:id="exitDevModeButton" mnemonicParsing="false" onAction="#exitDevMode" styleClass="nav-item" visible="false" managed="false">
+        <graphic>
+          <FontIcon iconLiteral="mdi2c-close-circle" iconSize="20" styleClass="nav-icon"/>
+        </graphic>
+        <text>Exit Dev Mode</text>
+      </Button>
+      <Button fx:id="adminButton" mnemonicParsing="false" onAction="#showAdminModal" styleClass="nav-item">
+        <graphic>
+          <FontIcon fx:id="adminIcon" iconLiteral="mdi2l-lock" iconSize="20" styleClass="nav-icon"/>
+        </graphic>
+        <text>Admin</text>
+      </Button>
+      <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+      </padding>
+    </VBox>
+  </StackPane>
+</VBox>
+</StackPane>

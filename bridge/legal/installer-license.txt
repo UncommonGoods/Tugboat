@@ -1,0 +1,38 @@
+TUGBOAT BRIDGE - LICENSE AND SOURCE AVAILABILITY
+
+Copyright (c) 2025 Uncommon Goods LLC
+
+
+1. TUGBOAT BRIDGE
+
+Tugboat Bridge is licensed under the Mozilla Public License, Version 2.0
+(https://www.mozilla.org/MPL/2.0/). Some components are MIT rather than MPL;
+each file states its own license in an SPDX header.
+
+Source code for the version in this installer is available at:
+
+    https://github.com/uncommongoods/tugboat
+
+
+2. OPENJFX AND THE BUNDLED JAVA RUNTIME
+
+This installer contains OpenJFX and a Java runtime image, both licensed under
+the GNU General Public License, version 2, WITH the Classpath Exception. The
+Classpath Exception permits Tugboat's own code to link against these and be
+distributed under Tugboat's own terms; it does not waive the GPL obligations
+that apply to these components themselves.
+
+OpenJFX is the unmodified upstream release. Corresponding source:
+
+    https://github.com/openjdk/jfx/tree/21-ga
+
+The Java runtime image was generated with jlink from Eclipse Temurin
+@JDK_VERSION@. Corresponding source for that exact build:
+
+    @JDK_SOURCE@
+
+
+3. NO WARRANTY
+
+This software is provided "as is", without warranty of any kind, express or
+implied. See the applicable license texts for the full disclaimers.

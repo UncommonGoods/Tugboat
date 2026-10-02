@@ -1,0 +1,592 @@
+/*
+   Copyright (c) 2025 Uncommon Goods LLC
+   SPDX-License-Identifier: MPL-2.0
+ */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Roboto:wght@300;400;500;700&display=swap');
+
+/* Root styles with custom color palette */
+.root {
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 14px;
+
+    /* Custom Color Palette Override */
+    /* Primary Colors */
+    -color-fg-default: #4C463F;          /* $primary - main text */
+    -color-fg-muted: #817B73;            /* $secondary - muted text */
+    -color-fg-subtle: #A8A098;           /* $inactive - subtle text */
+
+    /* Accent Colors */
+    -color-accent-emphasis: #047176; /*#048D8A;*/      /* $active - primary accent */
+    -color-accent-fg: #FFFFFF;           /* white text on accent */
+    -color-accent-subtle: #addad9;       /* $active-secondary - subtle accent bg */
+    -color-accent-muted: #b7d8d7; /*#CAE3E2;*/        /* lighter accent for subtle elements */
+
+    /* Background Colors */
+    -color-bg-default: #FFFFFF;          /* $white - main background */
+    -color-bg-subtle: #E8E4DF;           /* $offwhite - subtle background */
+    -color-bg-inset: #E8E4DF;            /* $offwhite - inset panels (Shipment Info) */
+    -color-bg-overlay: #FFFFFF;          /* white for overlays */
+
+    /* Border Colors */
+    -color-border-default: #D5D1CC;      /* $offwhite darkened - default borders */
+    -color-border-muted: #EEEAE5;        /* lighter borders */
+    -color-border-subtle: #F2EFEA;       /* subtle borders */
+
+    /* Success Colors */
+    -color-success-emphasis: #85B77D;     /* $brand-secondary - success actions */
+    -color-success-fg: #FFFFFF;          /* white text on success */
+    -color-success-subtle: #F0F7EF;      /* light success background */
+
+    /* Danger Colors */
+    -color-danger-emphasis: #F86966;      /* $highlight - danger/error */
+    -color-danger-fg: #FFFFFF;           /* white text on danger */
+    -color-danger-subtle: #FEF2F2;       /* light danger background */
+
+    /* Warning Colors */
+    -color-attention-emphasis: #FBD568;   /* $reviews - warnings */
+    -color-attention-fg: #4C463F;        /* dark text on warning */
+    -color-attention-subtle: #FFFBEB;    /* light warning background */
+
+    /* Brand Colors */
+    -color-brand-emphasis: #387C9B;       /* $brand-primary - brand elements */
+    -color-brand-fg: #FFFFFF;            /* white text on brand */
+    -color-brand-subtle: #E5F0F0;        /* $collection - brand background */
+
+    /* Text on emphasis colors */
+    -color-fg-on-emphasis: #FFFFFF;      /* white text on dark backgrounds */
+}
+
+/* Top Bar */
+.top-bar {
+    -fx-background-color: -color-brand-subtle;  /* $collection - light mint */
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 0 0 1 0;
+    -fx-alignment: center-left;
+    -fx-min-height: 72px;
+    -fx-max-height: 72px;
+}
+
+/* Hamburger Button */
+.hamburger-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 12 16 12 16;
+    -fx-cursor: hand;
+    -fx-background-radius: 4;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #343a40;
+    -fx-font-family: "Roboto", sans-serif;
+}
+
+.hamburger-button:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+}
+
+.hamburger-button:pressed {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Logo container */
+.logo-container {
+    -fx-padding: 12;
+    -fx-translate-x: -25;
+}
+
+.tugboat-svg {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 2, 0, 0, 1);
+    -fx-fill: #343a40;
+}
+
+/* DEV Mode Indicator */
+.dev-indicator {
+    -fx-font-size: 24pt;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
+/* Content Area */
+.content-area {
+    -fx-background-color: #ffffff;
+}
+
+.placeholder-text {
+    -fx-font-size: 18px;
+    -fx-text-fill: #6c757d;
+    -fx-alignment: center;
+}
+
+/* Left Navigation */
+.left-navigation {
+    -fx-background-color: #ffffff;
+    -fx-max-width: 300px;
+    -fx-min-width: 300px;
+    -fx-spacing: 8px;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 1 0 0;
+}
+
+.nav-title {
+    -fx-text-fill: #343a40;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Merriweather", serif;
+    -fx-padding: 0 0 16 0;
+}
+
+/* Navigation Items */
+.nav-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #495057;
+    -fx-alignment: center-left;
+    -fx-padding: 12 16 12 16;
+    -fx-max-width: infinity;
+    -fx-background-radius: 4;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-font-size: 16px;
+    -fx-font-family: "Merriweather", serif;
+    -fx-graphic-text-gap: 12px;
+}
+
+.nav-icon {
+    -fx-icon-color: #495057;
+}
+
+.nav-item:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+    -fx-text-fill: #343a40;
+}
+
+.nav-item:hover .nav-icon {
+    -fx-icon-color: #343a40;
+}
+
+.nav-item:pressed {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+}
+
+.nav-item:focused {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+    -fx-text-fill: #343a40;
+}
+
+/* SVG Path for hamburger icon */
+.hamburger-button .svg-path {
+    -fx-fill: #495057;
+    -fx-stroke: #495057;
+    -fx-stroke-width: 2;
+}
+
+/* Shipping Screen Styles */
+.content-wrapper {
+    -fx-max-width: 800px;
+    -fx-alignment: center;
+}
+
+.page-title {
+    -fx-font-family: "Merriweather", serif;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+    -fx-padding: 20 0 20 0;
+    -fx-max-width: 800px;
+    -fx-alignment: center-left;
+}
+
+.control-bar {
+    -fx-background-color: -color-brand-subtle;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-alignment: center-left;
+}
+
+/* Shipping page notice when there is no origin address to ship from */
+.origin-warning {
+    -fx-background-color: -color-attention-subtle;
+    -fx-border-color: -color-attention-emphasis;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 12 16 12 16;
+}
+
+.origin-warning .label {
+    -fx-text-fill: -color-attention-fg;
+}
+
+.origin-warning .ikonli-font-icon {
+    -fx-icon-color: -color-attention-fg;
+    -fx-fill: -color-attention-fg;
+}
+
+/* Control buttons - let AtlantaFX handle the styling */
+
+/* Auto-ship toggle and clear button - let AtlantaFX handle the styling */
+
+.shipment-info-panel {
+    -fx-background-color: -color-bg-inset;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.destination-address-panel {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.section-title {
+    -fx-font-family: "Merriweather", serif;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.field-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-fg-muted;
+    -fx-font-weight: normal;
+}
+
+/* Input fields - reduce border radius from Nord Light default */
+.text-field, .combo-box {
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+}
+
+/* Form button styling - target buttons within control-bar, form panels, and settings panel */
+.control-bar .button, .shipment-info-panel .button, .destination-address-panel .button, .settings-panel .button {
+    -fx-font-family: "Merriweather", serif;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #93C9C8;
+    -fx-border-width: 2px;
+    -fx-text-fill: #78776d;
+    -fx-cursor: hand;
+}
+
+/* Accent buttons override */
+.control-bar .button.accent, .shipment-info-panel .button.accent, .destination-address-panel .button.accent, .settings-panel .button.accent {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-border-color: -color-accent-emphasis;
+    -fx-text-fill: -color-accent-fg;
+}
+
+/* Button hover states */
+.control-bar .button:hover, .shipment-info-panel .button:hover, .destination-address-panel .button:hover, .settings-panel .button:hover {
+    -fx-background-color: -color-accent-muted;
+    -fx-border-color: -color-accent-muted;
+}
+
+/* Accent button hover states */
+.control-bar .button.accent:hover, .shipment-info-panel .button.accent:hover, .destination-address-panel .button.accent:hover, .settings-panel .button.accent:hover {
+    -fx-background-color: -color-accent-subtle;
+    -fx-border-color: -color-accent-subtle;
+}
+
+/* Load button - match input field height */
+.shipment-info-panel .button {
+    -fx-pref-height: 33px;
+    -fx-min-height: 33px;
+    -fx-max-height: 33px;
+}
+
+/* Cargo ID field - remove right border radius to connect with load button */
+.cargo-id-field {
+    -fx-background-radius: 4px 0 0 4px;
+    -fx-border-radius: 4px 0 0 4px;
+}
+
+/* Load button - remove left border radius to connect with input field */
+.button.accent.load-button {
+    -fx-background-radius: 0 4px 4px 0 !important;
+    -fx-border-radius: 0 4px 4px 0 !important;
+    -fx-font-size: 12px !important;
+    -fx-padding: 6px 8px 6px 8px !important;
+}
+
+/* Auto-ship label styling */
+.auto-ship-label {
+    -fx-text-fill: #817B73;
+}
+
+/* Add box link styling - plain text appearance */
+.add-box-link {
+    -fx-text-fill: -color-fg-default;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.add-box-link:hover {
+    -fx-text-fill: -color-accent-emphasis;
+}
+
+/* Remove box button styling */
+.remove-box-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #F86966;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 4px 8px;
+}
+
+.remove-box-button:hover {
+    -fx-background-color: rgba(248, 105, 102, 0.1);
+    -fx-background-radius: 4px;
+}
+
+/* Settings Page Styling */
+.settings-panel {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+/* Eye toggle button styling - use !important to override AtlantaFX */
+.settings-panel .eye-toggle-button {
+    -fx-background-color: #FFFFFF !important;
+    -fx-border-color: #D5D1CC !important;
+    -fx-border-width: 1px 1px 1px 0px !important;
+    -fx-padding: 0px 8px !important;
+    -fx-cursor: hand !important;
+    -fx-background-radius: 0 4px 4px 0 !important;
+    -fx-border-radius: 0 4px 4px 0 !important;
+    -fx-text-fill: #817B73 !important;
+    -fx-pref-height: 34px !important;
+    -fx-min-height: 34px !important;
+    -fx-max-height: 34px !important;
+}
+
+.settings-panel .eye-toggle-button:hover {
+    -fx-background-color: #F5F5F5 !important;
+    -fx-text-fill: #4C463F !important;
+    -fx-border-color: #D5D1CC !important;
+}
+
+.settings-panel .eye-toggle-button:pressed {
+    -fx-background-color: #EEEEEE !important;
+    -fx-border-color: #D5D1CC !important;
+}
+
+/* Specifically target the fields that have eye buttons to remove right border and flatten corners */
+.settings-panel #shippingClientKey,
+.settings-panel #shippingClientKeyVisible,
+.settings-panel #pgPasswordField,
+.settings-panel #pgPasswordVisible,
+.settings-panel #internationalShippingClientKey,
+.settings-panel #internationalShippingClientKeyVisible,
+.settings-panel #passwordField,
+.settings-panel #passwordVisible,
+.settings-panel #settingsPasswordField,
+.settings-panel #settingsPasswordVisible,
+.settings-panel #adminPasswordField,
+.settings-panel #adminPasswordVisible {
+    -fx-border-width: 1px 0px 1px 1px !important;
+    -fx-background-radius: 4px 0 0 4px !important;
+    -fx-border-radius: 4px 0 0 4px !important;
+}
+
+/* Success checkmark styling */
+.success {
+    -fx-icon-color: -color-success-emphasis;
+    -fx-effect: dropshadow(three-pass-box, rgba(133, 183, 125, 0.3), 2, 0, 0, 1);
+    -fx-text-fill: -color-success-emphasis;
+}
+
+/* Danger/error text styling */
+.danger {
+    -fx-text-fill: -color-danger-emphasis;
+}
+
+/* Update Modal Styles */
+.update-modal {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
+}
+
+.update-title {
+    -fx-font-family: "Merriweather", serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.update-icon {
+    -fx-icon-color: -color-accent-emphasis;
+}
+
+.success-icon {
+    -fx-icon-color: -color-success-emphasis;
+}
+
+.error-icon {
+    -fx-icon-color: -color-danger-emphasis;
+}
+
+.update-version {
+    -fx-font-family: "Merriweather", serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.current-version {
+    -fx-text-fill: -color-fg-muted;
+    -fx-font-size: 12px;
+}
+
+.notes-title {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+    -fx-font-size: 13px;
+}
+
+.release-notes {
+    -fx-background-color: -color-bg-subtle;
+    -fx-border-color: -color-border-muted;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-text-fill: -color-fg-default;
+    -fx-font-size: 12px;
+}
+
+.release-notes .content {
+    -fx-background-color: transparent;
+}
+
+.startup-message {
+    -fx-text-fill: -color-attention-emphasis;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.wait-message {
+    -fx-text-fill: -color-fg-muted;
+    -fx-font-style: italic;
+}
+
+.update-button {
+    -fx-font-family: "Merriweather", serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-cursor: hand;
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 2px;
+    -fx-text-fill: -color-fg-default;
+}
+
+.update-button.accent {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-border-color: -color-accent-emphasis;
+    -fx-text-fill: -color-accent-fg;
+}
+
+.update-button.accent:hover {
+    -fx-background-color: -color-accent-subtle;
+    -fx-border-color: -color-accent-subtle;
+}
+
+.restart-button {
+    -fx-font-family: "Merriweather", serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-cursor: hand;
+}
+
+.restart-button.accent {
+    -fx-background-color: -color-success-emphasis;
+    -fx-border-color: -color-success-emphasis;
+    -fx-text-fill: -color-success-fg;
+}
+
+.restart-button.accent:hover {
+    -fx-background-color: -color-success-subtle;
+    -fx-border-color: -color-success-subtle;
+    -fx-text-fill: -color-fg-default;
+}
+
+.close-button {
+    -fx-background-color: -color-bg-subtle;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-text-fill: -color-fg-default;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-cursor: hand;
+}
+
+.close-button:hover {
+    -fx-background-color: -color-border-muted;
+}
+
+.update-progress {
+    -fx-accent: -color-accent-emphasis;
+}
+
+.update-progress .bar {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-background-radius: 4;
+}
+
+.update-progress .track {
+    -fx-background-color: -color-bg-subtle;
+    -fx-background-radius: 4;
+}
+
+.update-status {
+    -fx-text-fill: -color-fg-default;
+    -fx-font-size: 13px;
+}
+
+.success-message {
+    -fx-text-fill: -color-success-emphasis;
+    -fx-font-size: 14px;
+    -fx-text-alignment: center;
+}
+
+.error-message {
+    -fx-text-fill: -color-danger-emphasis;
+    -fx-font-size: 14px;
+    -fx-text-alignment: center;
+}
+
+.continue-message {
+    -fx-text-fill: -color-fg-muted;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+}
+
+/* Read-only weight field styling */
+.weight-field-readonly {
+    -fx-background-color: rgba(0, 0, 0, 0.04), -color-bg-default;
+    -fx-opacity: 0.85;
+    -fx-cursor: default;
+}

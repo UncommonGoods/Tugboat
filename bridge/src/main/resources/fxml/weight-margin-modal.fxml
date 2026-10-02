@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2025 Uncommon Goods LLC
+  SPDX-License-Identifier: MPL-2.0
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uncommongoods.tugboat.bridge.WeightMarginModalController"
+      alignment="CENTER">
+
+  <VBox styleClass="settings-panel" spacing="16" maxWidth="450" minWidth="400">
+    <VBox spacing="8" alignment="CENTER">
+      <Label fx:id="titleLabel" text="Weight Difference Detected" styleClass="modal-title,title-3"/>
+      <Label fx:id="subtitleLabel" text="The scale weight differs from the estimated weight"
+             styleClass="modal-subtitle,text-caption" wrapText="true" textAlignment="CENTER"/>
+    </VBox>
+
+    <VBox spacing="12" styleClass="weight-details-section">
+      <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Scale Weight:" styleClass="weight-label,text-bold"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="scaleWeightLabel" text="0.00 lbs" styleClass="weight-value"/>
+      </HBox>
+
+      <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Estimated Weight:" styleClass="weight-label,text-bold"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="estimatedWeightLabel" text="0.00 lbs" styleClass="weight-value"/>
+      </HBox>
+
+      <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Difference:" styleClass="weight-label,text-bold"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="differenceLabel" text="0.00 lbs" styleClass="weight-value,text-warning"/>
+      </HBox>
+    </VBox>
+
+    <VBox spacing="8" alignment="CENTER">
+      <Label fx:id="messageLabel" text="Do you want to proceed with shipping?"
+             styleClass="modal-message" wrapText="true" textAlignment="CENTER"/>
+    </VBox>
+
+    <HBox spacing="12" alignment="CENTER">
+      <Button fx:id="noButton" text="No" styleClass="modal-button-secondary"
+              onAction="#handleNo" prefWidth="100"/>
+      <Button fx:id="yesButton" text="Yes" styleClass="modal-button-primary,accent"
+              onAction="#handleYes" prefWidth="100"/>
+    </HBox>
+
+    <padding>
+      <Insets top="24" bottom="24" left="24" right="24"/>
+    </padding>
+  </VBox>
+
+  <padding>
+    <Insets top="40" bottom="40" left="40" right="40"/>
+  </padding>
+</VBox>

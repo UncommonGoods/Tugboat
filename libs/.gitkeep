@@ -1,0 +1,2 @@
+Drop adapter jars in this directory to add them to the Bridge and XO runtime
+classpath. See adapters/README.md for what the jar has to contain.

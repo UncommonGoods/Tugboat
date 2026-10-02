@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2025 Uncommon Goods LLC
+  SPDX-License-Identifier: MPL-2.0
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uncommongoods.tugboat.bridge.AdminModalController" alignment="CENTER">
+
+  <VBox styleClass="settings-panel" alignment="TOP_LEFT" spacing="20" maxWidth="400">
+
+    <Label styleClass="page-title,title-2" text="Admin Access"/>
+
+    <VBox spacing="4">
+      <Label styleClass="field-label,text-caption" text="Admin Password:"/>
+      <HBox alignment="CENTER_LEFT" spacing="10">
+        <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+          <PasswordField fx:id="passwordField" HBox.hgrow="ALWAYS"/>
+          <TextField fx:id="passwordVisible" managed="false" visible="false" HBox.hgrow="ALWAYS"/>
+          <Button onAction="#togglePasswordVisibility" styleClass="eye-toggle-button">
+            <graphic>
+              <FontIcon fx:id="passwordIcon" iconLiteral="mdi2e-eye" iconSize="16"/>
+            </graphic>
+          </Button>
+        </HBox>
+        <Button fx:id="signInButton" text="Enter" onAction="#enterAdminMode" styleClass="accent"/>
+      </HBox>
+    </VBox>
+
+    <Label fx:id="errorLabel" text="" styleClass="danger" visible="false" managed="false"/>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+      <Button text="Cancel" onAction="#cancel" styleClass=""/>
+    </HBox>
+
+    <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+  </VBox>
+
+  <padding>
+    <Insets bottom="50" left="50" right="50" top="50"/>
+  </padding>
+</VBox>

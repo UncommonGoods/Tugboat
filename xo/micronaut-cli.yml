@@ -1,0 +1,9 @@
+# Copyright (c) 2025 Uncommon Goods LLC
+# SPDX-License-Identifier: MPL-2.0
+
+applicationType: default
+defaultPackage: com.uncommongoods.tugboat.xo
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle_kotlin
+features: [app-name, aws-secrets-manager, gradle, http-client-jdk, java, java-application, jdbc-hikari, jetty-server, jms-sqs, jooq, jul-to-slf4j, junit, logback, micronaut-aot, micronaut-build, micronaut-http-validation, postgres, readme, serialization-jackson, shade, static-resources, test-resources, yaml, yaml-build]

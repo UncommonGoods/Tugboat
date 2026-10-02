@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2025 Uncommon Goods LLC
+  SPDX-License-Identifier: MPL-2.0
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import atlantafx.base.controls.ToggleSwitch?>
+<?import atlantafx.base.layout.InputGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uncommongoods.tugboat.bridge.ShippingController" alignment="TOP_CENTER">
+  <Label styleClass="page-title,title-2" text="Shipping"/>
+
+  <ScrollPane fx:id="mainScrollPane" fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS">
+    <HBox alignment="CENTER">
+      <VBox styleClass="content-wrapper">
+        <HBox fx:id="originWarningBox" styleClass="origin-warning" spacing="8" alignment="CENTER_LEFT"
+              visible="false" managed="false">
+          <FontIcon iconLiteral="mdi2a-alert-outline" iconSize="16"/>
+          <Label text="No origin address set. Use Set Origin in the menu before shipping."/>
+          <VBox.margin>
+            <Insets bottom="12.0"/>
+          </VBox.margin>
+        </HBox>
+
+        <HBox styleClass="control-bar" spacing="10">
+          <Button fx:id="rateButton" mnemonicParsing="false" onAction="#rateShipment" styleClass="accent"
+                  text="RATE" prefWidth="120"/>
+          <Button fx:id="shipButton" mnemonicParsing="false" onAction="#shipShipment" text="SHIP"
+                  prefWidth="120"/>
+          <HBox fx:id="autoShipBox" spacing="10" alignment="CENTER_LEFT">
+            <ToggleSwitch fx:id="autoShipToggle"/>
+            <Label text="auto-ship" styleClass="text-caption,auto-ship-label"/>
+          </HBox>
+          <Region HBox.hgrow="ALWAYS"/>
+          <Button mnemonicParsing="false" onAction="#clearInputsAndTugboat" text="CLEAR INPUTS" prefWidth="150"/>
+          <padding>
+            <Insets bottom="16.0" left="20.0" right="20.0" top="16.0"/>
+          </padding>
+        </HBox>
+
+        <HBox spacing="20" VBox.vgrow="ALWAYS">
+          <VBox styleClass="shipment-info-panel" spacing="28" prefWidth="400">
+            <Label styleClass="section-title,title-4" text="Shipment Info"/>
+
+            <VBox spacing="4">
+              <Label styleClass="field-label,text-caption" text="cargo id"/>
+              <InputGroup>
+                <TextField fx:id="cargoIdField" styleClass="cargo-id-field"
+                           prefWidth="240"/>
+                <Button fx:id="loadButton" mnemonicParsing="false" onAction="#loadShipment" styleClass="accent,load-button"
+                        text="LOAD" prefWidth="110"/>
+              </InputGroup>
+              <VBox.margin>
+                <Insets top="-10"/>
+              </VBox.margin>
+            </VBox>
+
+            <HBox spacing="10">
+              <VBox spacing="4" prefWidth="100">
+                <Label fx:id="weightLabel" styleClass="field-label,text-caption" text="weight (lbs)"/>
+                <TextField fx:id="weightField" styleClass="rounded,weight-field-readonly" text="0"/>
+              </VBox>
+              <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label styleClass="field-label,text-caption" text="package dimensions (in)"/>
+                <TextField fx:id="dimensionsField" styleClass="rounded" text="0X0X0"/>
+              </VBox>
+            </HBox>
+
+            <VBox spacing="4">
+              <Label styleClass="field-label,text-caption" text="service"/>
+              <ComboBox fx:id="serviceCombo" styleClass="rounded" promptText="not yet rated"
+                        maxWidth="Infinity"/>
+            </VBox>
+
+            <VBox spacing="4">
+              <Label styleClass="field-label,text-caption" text="total charge"/>
+              <TextField fx:id="totalChargeField" styleClass="rounded" editable="false"/>
+            </VBox>
+
+            <VBox spacing="4">
+              <Label styleClass="field-label,text-caption" text="expected date"/>
+              <TextField fx:id="expectedDateField" styleClass="rounded" editable="false"/>
+            </VBox>
+
+            <VBox fx:id="shippedStatusBox" visible="false" managed="false">
+              <Label text="SHIPPED" styleClass="text-success,text-bold"/>
+            </VBox>
+
+            <HBox alignment="CENTER_LEFT">
+              <Label fx:id="addBoxButton" text="+ ADD A BOX" styleClass="add-box-link" onMouseClicked="#addBox"/>
+              <VBox.margin>
+                <Insets top="10"/>
+              </VBox.margin>
+            </HBox>
+            <padding>
+              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+            </padding>
+          </VBox>
+
+          <VBox styleClass="destination-address-panel" spacing="16" prefWidth="400" VBox.vgrow="ALWAYS">
+            <Label styleClass="section-title,title-4" text="Destination Address"/>
+
+            <VBox spacing="4">
+              <Label styleClass="field-label,text-caption" text="name"/>
+              <TextField fx:id="nameField" styleClass="rounded"/>
+            </VBox>
+
+            <VBox spacing="4">
+              <Label styleClass="field-label,text-caption" text="address 1"/>
+              <TextField fx:id="address1Field" styleClass="rounded"/>
+            </VBox>
+
+            <VBox spacing="4">
+              <Label styleClass="field-label,text-caption" text="address 2"/>
+              <TextField fx:id="address2Field" styleClass="rounded"/>
+            </VBox>
+
+            <HBox spacing="10">
+              <VBox spacing="4" HBox.hgrow="ALWAYS" minWidth="0">
+                <Label styleClass="field-label,text-caption" text="country"/>
+                <ComboBox fx:id="countryCombo" styleClass="rounded" maxWidth="Infinity" editable="true"/>
+              </VBox>
+              <VBox spacing="4" prefWidth="120" minWidth="180">
+                <Label styleClass="field-label,text-caption" text="postal code"/>
+                <TextField fx:id="postalCodeField" styleClass="rounded"/>
+              </VBox>
+            </HBox>
+
+            <HBox spacing="10">
+              <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label styleClass="field-label,text-caption" text="city"/>
+                <TextField fx:id="cityField" styleClass="rounded"/>
+              </VBox>
+              <VBox spacing="4" prefWidth="120" minWidth="180">
+                <Label styleClass="field-label,text-caption" text="state"/>
+                <ComboBox fx:id="stateCombo" styleClass="rounded" maxWidth="Infinity" editable="true" promptText="select state"/>
+              </VBox>
+            </HBox>
+
+            <VBox spacing="4">
+              <Label styleClass="field-label,text-caption" text="phone"/>
+              <TextField fx:id="phoneField" styleClass="rounded"/>
+            </VBox>
+            <padding>
+              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+            </padding>
+          </VBox>
+          <padding>
+            <Insets top="20.0"/>
+          </padding>
+        </HBox>
+
+        <!-- Multi-Box Containers -->
+        <HBox spacing="20">
+          <VBox fx:id="multiBoxContainer" prefWidth="415">
+            <!-- Dynamic box containers added here -->
+          </VBox>
+          <Region prefWidth="20"/>
+          <Region prefWidth="400"/>
+          <padding>
+            <Insets bottom="30"/>
+          </padding>
+        </HBox>
+
+        <!-- local history -->
+        <VBox fx:id="localHistorySection" visible="false" managed="false" styleClass="shipment-info-panel" spacing="10">
+          <Label styleClass="section-title,title-4" text="Recent Shipments"/>
+          <TableView fx:id="localHistoryTable">
+            <columns>
+              <TableColumn fx:id="localShipmentIdColumn" text="Shipment ID" prefWidth="100"/>
+              <TableColumn fx:id="localCarrierColumn" text="Carrier" prefWidth="90"/>
+              <TableColumn fx:id="localServiceColumn" text="Service" prefWidth="120"/>
+              <TableColumn fx:id="localChargeColumn" text="Charge" prefWidth="80"/>
+              <TableColumn fx:id="localTrackingColumn" text="Tracking" prefWidth="200"/>
+              <TableColumn fx:id="localPrintColumn" text="Print" prefWidth="70"/>
+              <TableColumn fx:id="localVoidColumn" text="Void" prefWidth="70"/>
+            </columns>
+          </TableView>
+          <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+          </padding>
+          <VBox.margin>
+            <Insets bottom="30.0"/>
+          </VBox.margin>
+        </VBox>
+      </VBox>
+    </HBox>
+  </ScrollPane>
+</VBox>

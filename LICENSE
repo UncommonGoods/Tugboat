@@ -1,0 +1,18 @@
+Tugboat is a monorepo with per-module licensing. There is no single license
+covering the whole repository.
+
+  - engine, bridge, xo ........ Mozilla Public License 2.0
+  - all other modules ......... MIT License
+
+Each module directory contains its own LICENSE file, which is authoritative for
+everything in that directory, including its build script. Files in the MPL
+modules also carry an SPDX-License-Identifier line.
+
+Three shared build files at the repository root are MIT: settings.gradle.kts,
+build.gradle.kts, and gradle/libs.versions.toml. They belong to no single
+module and configure the MPL and MIT modules alike; each carries an SPDX header
+saying so.
+
+See LICENSING.md at the repository root for what this means in practice.
+
+Copyright (c) 2025 Uncommon Goods LLC

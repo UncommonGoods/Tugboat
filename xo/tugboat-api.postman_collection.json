@@ -1,0 +1,669 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-4789-90ab-cdef12345678",
+		"name": "Tugboat API",
+		"description": "API collection for Tugboat shipping service endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/tugboat",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Get Pickup Facility",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/pickup-facility/:pickupFacilityCode",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"pickup-facility",
+						":pickupFacilityCode"
+					],
+					"variable": [
+						{
+							"key": "pickupFacilityCode",
+							"value": "WH001"
+						}
+					]
+				},
+				"description": "Get pickup facility by pickup facility code"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pickup Group",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/pickup-group/:pickupFacilityCode/:groupName",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"pickup-group",
+						":pickupFacilityCode",
+						":groupName"
+					],
+					"variable": [
+						{
+							"key": "pickupFacilityCode",
+							"value": "WH001"
+						},
+						{
+							"key": "groupName",
+							"value": "default-group"
+						}
+					]
+				},
+				"description": "Get manifest group by pickup facility code and group name"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Tracker",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/tracker/:trackingCode/:carrier",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"tracker",
+						":trackingCode",
+						":carrier"
+					],
+					"variable": [
+						{
+							"key": "trackingCode",
+							"value": "1Z999AA1234567890"
+						},
+						{
+							"key": "carrier",
+							"value": "UPS"
+						}
+					]
+				},
+				"description": "Create a new tracker for a tracking code and carrier"
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Shipment",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId"
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Retrieve shipment details by shipment ID"
+			},
+			"response": []
+		},
+		{
+			"name": "Initialize Shipment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/initialize",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"initialize"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Initialize a shipment before rating"
+			},
+			"response": []
+		},
+		{
+			"name": "Initialize Shipment (Async)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/initialize?async=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"initialize"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "true"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Initialize a shipment before rating (asynchronous)"
+			},
+			"response": []
+		},
+		{
+			"name": "Rate Shipment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/rate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"rate"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Get shipping rates for a shipment"
+			},
+			"response": []
+		},
+		{
+			"name": "Rate Shipment (Async)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/rate?async=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"rate"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "true"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Get shipping rates for a shipment (asynchronous)"
+			},
+			"response": []
+		},
+		{
+			"name": "Re-rate Shipment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/re-rate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"re-rate"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Re-rate a shipment with updated information"
+			},
+			"response": []
+		},
+		{
+			"name": "Re-rate Shipment (Async)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/re-rate?async=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"re-rate"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "true"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Re-rate a shipment with updated information (asynchronous)"
+			},
+			"response": []
+		},
+		{
+			"name": "Shop Rates",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/shop",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"shop"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Shop for rates across multiple carriers"
+			},
+			"response": []
+		},
+		{
+			"name": "Shop Rates (Async)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/shop?async=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"shop"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "true"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Shop for rates across multiple carriers (asynchronous)"
+			},
+			"response": []
+		},
+		{
+			"name": "Purchase Label",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/purchase",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"purchase"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Purchase a shipping label for the shipment"
+			},
+			"response": []
+		},
+		{
+			"name": "Purchase Label (Async)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/purchase?async=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"purchase"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "true"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Purchase a shipping label for the shipment (asynchronous)"
+			},
+			"response": []
+		},
+		{
+			"name": "Purchase Label with Box ID",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/purchase/:boxId",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"purchase",
+						":boxId"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						},
+						{
+							"key": "boxId",
+							"value": "1"
+						}
+					]
+				},
+				"description": "Purchase a shipping label with a specific box ID. Validates box dimensions against shipment parcel and updates if dimensions don't match within 0.5 tolerance."
+			},
+			"response": []
+		},
+		{
+			"name": "Purchase Label with Box ID (Async)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/purchase/:boxId?async=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"purchase",
+						":boxId"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "true"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						},
+						{
+							"key": "boxId",
+							"value": "1"
+						}
+					]
+				},
+				"description": "Purchase a shipping label with a specific box ID (asynchronous). Validates box dimensions against shipment parcel and updates if dimensions don't match within 0.5 tolerance."
+			},
+			"response": []
+		},
+		{
+			"name": "Batch Purchase Labels",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  \"SHIP123456\",\n  \"SHIP123457\",\n  \"SHIP123458\"\n]"
+				},
+				"url": {
+					"raw": "{{base_url}}/batch/purchase",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"batch",
+						"purchase"
+					]
+				},
+				"description": "Purchase shipping labels for multiple shipments (asynchronous batch operation)"
+			},
+			"response": []
+		},
+		{
+			"name": "Print Label",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/print",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"print"
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Print shipping label for the shipment"
+			},
+			"response": []
+		},
+		{
+			"name": "Re-print Label",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/re-print",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"re-print"
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Re-print shipping label for the shipment"
+			},
+			"response": []
+		},
+		{
+			"name": "Void Label",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/void",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"void"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Void a shipping label"
+			},
+			"response": []
+		},
+		{
+			"name": "Void Label (Async)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/:shipmentId/void?async=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						":shipmentId",
+						"void"
+					],
+					"query": [
+						{
+							"key": "async",
+							"value": "true"
+						}
+					],
+					"variable": [
+						{
+							"key": "shipmentId",
+							"value": "SHIP123456"
+						}
+					]
+				},
+				"description": "Void a shipping label (asynchronous)"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

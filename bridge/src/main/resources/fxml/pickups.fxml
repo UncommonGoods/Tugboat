@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2025 Uncommon Goods LLC
+  SPDX-License-Identifier: MPL-2.0
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uncommongoods.tugboat.bridge.PickupsController" alignment="TOP_CENTER">
+
+  <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS">
+    <HBox alignment="CENTER">
+      <StackPane fx:id="contentStackPane">
+        <VBox styleClass="content-wrapper">
+          <Label styleClass="page-title,title-2" id="pickups-title" text="Pickups" maxWidth="700" alignment="BASELINE_LEFT"/>
+
+          <VBox fx:id="facilityAddressForm" styleClass="settings-panel" spacing="20" prefWidth="700" alignment="CENTER" visible="false" managed="false">
+            <Label styleClass="section-title,title-4" text="Facility Address:"/>
+
+            <GridPane fx:id="facilityFormGrid" hgap="10" vgap="10" alignment="CENTER">
+              <Label styleClass="field-label,text-caption" text="Facility Code: *" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+              <TextField fx:id="facilityCodeField" promptText="Max 6 characters" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+              <Label styleClass="field-label,text-caption" text="Company: *" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+              <TextField fx:id="companyField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+              <Label styleClass="field-label,text-caption" text="Street 1: *" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+              <TextField fx:id="street1Field" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+              <Label styleClass="field-label,text-caption" text="Street 2:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+              <TextField fx:id="street2Field" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+              <Label styleClass="field-label,text-caption" text="City: *" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+              <TextField fx:id="cityField" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+              <Label styleClass="field-label,text-caption" text="State: *" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+              <TextField fx:id="stateField" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+              <Label styleClass="field-label,text-caption" text="Country: *" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+              <TextField fx:id="countryField" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+              <Label styleClass="field-label,text-caption" text="ZIP: *" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+              <TextField fx:id="zipField" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+
+              <Label styleClass="field-label,text-caption" text="Phone: *" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+              <TextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+            </GridPane>
+
+            <HBox alignment="CENTER">
+              <Button fx:id="facilitySubmitButton" text="Submit" styleClass="accent"/>
+              <VBox.margin>
+                <Insets top="20"/>
+              </VBox.margin>
+            </HBox>
+
+            <padding>
+              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+            </padding>
+          </VBox>
+
+          <VBox fx:id="addPickupGroupForm" styleClass="settings-panel" spacing="20" prefWidth="700" alignment="CENTER" visible="false" managed="false">
+            <Label styleClass="section-title,title-4" text="Add Pickup Group"/>
+
+            <GridPane fx:id="pickupGroupFormGrid" hgap="10" vgap="10" alignment="CENTER">
+              <Label styleClass="field-label,text-caption" text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+              <TextField fx:id="groupNameField" promptText="Enter group name (max 28 characters)" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+              <Label styleClass="field-label,text-caption" text="Shipper:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+              <ComboBox fx:id="shipperCombo" promptText="Select shipper" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+              <Label styleClass="field-label,text-caption" text="Carrier Account:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+              <ComboBox fx:id="carrierAccountCombo" promptText="Select or enter carrier account" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            </GridPane>
+
+            <HBox alignment="CENTER">
+              <Button fx:id="createGroupButton" text="Create Group" styleClass="accent"/>
+              <VBox.margin>
+                <Insets top="20"/>
+              </VBox.margin>
+            </HBox>
+
+            <padding>
+              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+            </padding>
+          </VBox>
+
+          <!-- Dynamic content container for manifest groups -->
+          <VBox fx:id="contentContainer" spacing="20" prefWidth="700">
+          </VBox>
+
+          <Button fx:id="rollAllGroupsButton" text="Roll all Pickup Groups to today" styleClass="accent" prefWidth="700" maxWidth="700" alignment="CENTER" visible="false" managed="false">
+            <VBox.margin>
+              <Insets top="20"/>
+            </VBox.margin>
+          </Button>
+
+          <padding>
+            <Insets bottom="30" top="20.0"/>
+          </padding>
+        </VBox>
+      </StackPane>
+    </HBox>
+  </ScrollPane>
+
+</VBox>

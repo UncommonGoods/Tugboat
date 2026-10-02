@@ -1,0 +1,58 @@
+# Copyright (c) 2025 Uncommon Goods LLC
+# SPDX-License-Identifier: MPL-2.0
+
+micronaut:
+  application:
+    name: tugboat
+  server:
+    host: 0.0.0.0
+    port: ${SERVER_PORT:8080}
+  jms:
+    sqs:
+      # SQS credentials/region come from the standard AWS chain:
+      # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_REGION (or profile/IAM role).
+      # Set MICRONAUT_JMS_SQS_ENABLED=false to run without AWS.
+      enabled: true
+
+# All runtime configuration is supplied through environment variables.
+tugboat:
+  api:
+    path: "/tugboat@pathSuffix@"
+  queue: ${TUGBOAT_QUEUE:}
+  cache:
+    prefix: ${TUGBOAT_CACHE_PREFIX:}
+  # The cache client itself is built from a CacheClientFactory discovered via
+  # ServiceLoader, and its fields are read straight from the environment rather
+  # than from here:
+  #   CACHE_URL   cache host (e.g. redis). Unset -> run without a cache:
+  #               state is not persisted between requests, cargo locking is
+  #               skipped, and pickups/manifests are unavailable.
+  #   CACHE_PORT  cache port (redis adapter defaults to 6379)
+  #   CACHE_TYPE  optional; names which factory to use when more than one
+  #               adapter is on the classpath (e.g. redis)
+  easypost:
+    api:
+      key: ${TUGBOAT_EASYPOST_API_KEY:}
+  # Optional vendor shipping clients. Their adapter modules are not tracked in
+  # version control, so they may not be on the classpath at all; when an adapter
+  # is absent these values are simply never read. When present, a client is
+  # registered only if at least one of its keys is set, so leaving the API key
+  # blank disables that client.
+  parsel:
+    api:
+      key: ${TUGBOAT_PARSEL_API_KEY:}
+  esw:
+    api:
+      key: ${TUGBOAT_ESW_API_KEY:}
+    security:
+      url: ${TUGBOAT_ESW_SECURITY_URL:`https://security-sts.production.eshopworld.com`}
+    package:
+      url: ${TUGBOAT_ESW_PACKAGE_URL:`https://logistics-package-api.production.eshopworld.com`}
+    # Brand code and client id are deployment-specific and have no default:
+    # unset, the esw client fails to build and is skipped with a logged error.
+    brand:
+      code: ${TUGBOAT_ESW_BRAND_CODE:}
+    grant:
+      type: ${TUGBOAT_ESW_GRANT_TYPE:client_credentials}
+    client:
+      id: ${TUGBOAT_ESW_CLIENT_ID:}

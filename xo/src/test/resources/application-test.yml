@@ -1,0 +1,21 @@
+# Copyright (c) 2025 Uncommon Goods LLC
+# SPDX-License-Identifier: MPL-2.0
+
+tugboat:
+  cache:
+    prefix: "tugboat-test"
+  esw:
+    security:
+      url: "https://security-sts.sandbox.eshopworld.com"
+    package:
+      url: "https://logistics-package-api.sandbox.eshopworld.com"
+
+# Set dummy environment variables for TugboatService validation
+EASYPOST_API_KEY: "test-key"
+ESW_API_KEY: "test-key"
+
+# Disable components that require external resources
+micronaut:
+  jms:
+    sqs:
+      enabled: false

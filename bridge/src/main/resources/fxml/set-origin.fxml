@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2025 Uncommon Goods LLC
+  SPDX-License-Identifier: MPL-2.0
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.uncommongoods.tugboat.bridge.SetOriginController" alignment="TOP_CENTER">
+
+  <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS">
+    <HBox alignment="CENTER">
+      <VBox styleClass="content-wrapper">
+        <Label styleClass="page-title,title-2" text="Set Origin" maxWidth="700" alignment="BASELINE_LEFT"/>
+        <VBox styleClass="settings-panel" spacing="20" prefWidth="700">
+
+          <Label styleClass="field-label,text-caption"
+                 text="Every shipment created on the Shipping page ships from this address."
+                 wrapText="true"/>
+
+          <HBox spacing="10">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+              <Label styleClass="field-label,text-caption" text="name"/>
+              <TextField fx:id="nameField" styleClass="rounded"/>
+            </VBox>
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+              <Label styleClass="field-label,text-caption" text="company"/>
+              <TextField fx:id="companyField" styleClass="rounded"/>
+            </VBox>
+          </HBox>
+
+          <VBox spacing="4">
+            <Label styleClass="field-label,text-caption" text="address 1"/>
+            <TextField fx:id="address1Field" styleClass="rounded"/>
+          </VBox>
+
+          <VBox spacing="4">
+            <Label styleClass="field-label,text-caption" text="address 2"/>
+            <TextField fx:id="address2Field" styleClass="rounded"/>
+          </VBox>
+
+          <HBox spacing="10">
+            <VBox spacing="4" HBox.hgrow="ALWAYS" minWidth="0">
+              <Label styleClass="field-label,text-caption" text="country"/>
+              <ComboBox fx:id="countryCombo" styleClass="rounded" maxWidth="Infinity" editable="true"/>
+            </VBox>
+            <VBox spacing="4" prefWidth="180" minWidth="180">
+              <Label styleClass="field-label,text-caption" text="postal code"/>
+              <TextField fx:id="postalCodeField" styleClass="rounded"/>
+            </VBox>
+          </HBox>
+
+          <HBox spacing="10">
+            <VBox spacing="4" HBox.hgrow="ALWAYS" minWidth="0">
+              <Label styleClass="field-label,text-caption" text="city"/>
+              <TextField fx:id="cityField" styleClass="rounded"/>
+            </VBox>
+            <VBox spacing="4" prefWidth="180" minWidth="180">
+              <Label styleClass="field-label,text-caption" text="state"/>
+              <ComboBox fx:id="stateCombo" styleClass="rounded" maxWidth="Infinity" editable="true"
+                        promptText="select state"/>
+            </VBox>
+          </HBox>
+
+          <VBox spacing="4">
+            <Label styleClass="field-label,text-caption" text="phone"/>
+            <TextField fx:id="phoneField" styleClass="rounded"/>
+          </VBox>
+
+          <HBox alignment="CENTER_LEFT" spacing="10">
+            <Button fx:id="saveOriginButton" text="Save Origin" styleClass="accent" onAction="#saveOrigin"/>
+            <FontIcon fx:id="saveOriginCheckmark" iconLiteral="mdi2c-check" iconSize="20" styleClass="success"
+                      visible="false"/>
+            <Label fx:id="saveOriginError" text="" styleClass="danger" visible="false" managed="false"/>
+            <VBox.margin>
+              <Insets top="10"/>
+            </VBox.margin>
+          </HBox>
+
+          <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+          </padding>
+        </VBox>
+
+        <padding>
+          <Insets bottom="30" top="20.0"/>
+        </padding>
+      </VBox>
+    </HBox>
+  </ScrollPane>
+</VBox>

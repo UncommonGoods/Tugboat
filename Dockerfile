@@ -1,0 +1,23 @@
+FROM eclipse-temurin:21-jdk-alpine AS java-builder
+ARG scope
+ARG hookstype
+ENV HOOKS=${hookstype:-hooks}
+ENV MICRONAUT_ENVIRONMENTS=$scope
+ENV AWS_REGION=us-east-1
+COPY . /tugboat
+WORKDIR /tugboat
+RUN ./gradlew :tugboat-xo:clean :tugboat-xo:build -PhooksImpl=$HOOKS --no-daemon
+
+FROM eclipse-temurin:21-jre-alpine
+ARG scope
+ENV APP_ENV=$scope
+ENV MICRONAUT_ENVIRONMENTS=$scope
+ENV TUGBOAT_JAR=tugboat-xo-all-optimized.jar
+ENV TUGBOAT_HOME=/usr/tugboat
+RUN apk add --no-cache tzdata
+ENV TZ=America/New_York
+EXPOSE 8080
+COPY --from=java-builder /tugboat/xo/build/libs/$TUGBOAT_JAR $TUGBOAT_HOME/
+WORKDIR $TUGBOAT_HOME
+ENTRYPOINT ["sh", "-c"]
+CMD ["java -jar -Duser.timezone=America/New_York $TUGBOAT_JAR"]
