@@ -165,6 +165,102 @@ Adapters provides a set of concrete Ports implementations.
 
 ---
 
+## Maintaining the public mirror
+
+This repository is a mirror of the `oss` branch of the maintainer's internal
+repository, where Tugboat is developed alongside proprietary modules that are
+never published. Changes move from that branch to this repository as `git am`
+patch files, so each published commit keeps its original message and author.
+
+**Ground rules (internal repository):**
+
+- Only open-source content lands on `oss`. Port generic work from internal
+  branches by cherry-picking or by hand, never by merging.
+- Keep `oss` linear. `git format-patch` skips merge commits, so a merge on `oss`
+  would silently leave its changes out of the next export.
+- Every export is marked with a tag, `oss-export/<YYYY-MM-DD>`, on the last
+  exported `oss` commit. The next export starts from the most recent one.
+
+### 1. Export (internal repository)
+
+```bash
+git fetch
+LAST=$(git describe --tags --abbrev=0 --match 'oss-export/*' oss)
+OUT=tugboat-oss-$(date +%F).mbox
+git format-patch --binary --stdout "$LAST"..oss > "$OUT"
+git log --oneline "$LAST"..oss          # what the file contains
+```
+
+Before handing the file over, scan it against the private denylist: one
+extended regex per line, naming internal hosts, accounts, artifact coordinates,
+and proprietary module paths. It lives outside the repository so the list
+itself is never published. **Any match blocks the export**: fix `oss` and
+export again.
+
+```bash
+grep -n -i -E -f ~/.config/tugboat/oss-denylist "$OUT" && echo "BLOCKED" || echo "clean"
+```
+
+Then tag the export point and push the tag:
+
+```bash
+git tag oss-export/$(date +%F) oss
+git push origin oss-export/$(date +%F)
+```
+
+### 2. Apply (this repository)
+
+Commits must carry the maintainer's identity. `git am` keeps each patch's
+author but sets the committer from your local config, so set it repo-locally
+first:
+
+```bash
+git config user.name  "<maintainer name>"
+git config user.email "<maintainer email>"
+
+git checkout main && git pull
+git am --3way --committer-date-is-author-date /path/to/tugboat-oss-<date>.mbox
+./gradlew build -x test
+```
+
+### 3. Verify, then push
+
+The mirror is exact when the two trees are identical. Compare tree hashes; they
+are the same in both repositories when the content matches:
+
+```bash
+git rev-parse HEAD^{tree}        # here
+git rev-parse oss^{tree}         # in the internal repository
+```
+
+If they match, `git push origin main`.
+
+### If `git am` stops
+
+`git am --abort` returns to where you started. The usual cause is drift, where
+this repository was changed directly, or an export range that missed something.
+From the internal repository, fetch this one and look at the difference:
+
+```bash
+git fetch <public-repo-url> main
+git diff --stat FETCH_HEAD oss
+```
+
+Then either fix the cause and re-export, or catch up in one commit:
+
+```bash
+# internal repository
+git diff --binary FETCH_HEAD oss > catchup.patch
+# this repository
+git apply --index catchup.patch && git commit -m "sync with oss"
+```
+
+Re-check the tree hashes afterwards. Changes made directly in this repository
+(for example, merged pull requests) must be brought back to `oss` the same way
+in reverse, `git format-patch` here and `git am` there, before the next export.
+
+---
+
 ## Contributing
 PRs and Issue reports are welcome
 
